@@ -251,7 +251,7 @@ const Index = () => {
                       <span className="text-[hsl(var(--foreground))/0.6]">{kw}</span>
                       <span className="text-[hsl(var(--foreground))/0.4]">=</span>
                       <span className="rounded-md bg-[hsl(var(--background))] border border-[hsl(var(--panel-border))/0.5] px-2 py-0.5">
-                        {keywords[kw] ?? "***"}
+                        {(keywords[kw] ?? "").trim() || hyphenate(kw)}
                       </span>
                     </div>
                   ))}
