@@ -2,18 +2,39 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings } from "lucide-react";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 
-const STORAGE_KEY = "keyword-guard:keywords-v1";
+const STORAGE_KEY = "keyword-guard:keywords-v2";
 
+// Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
+// You can still set a custom replacement per keyword if you want one.
 const DEFAULT_KEYWORDS: KeywordMap = {
-  crypto: "asset", payment: "order", instagram: "this platform", linkedin: "this platform",
-  facebook: "this platform", negative: "less positive", star: "feedback", transferwise: "the platform",
-  account: "profile", bank: "the platform", messenger: "this platform", skype: "this platform",
-  card: "the platform", credit: "the platform", purchase: "order", whatsapp: "this platform",
-  password: "details", inbox: "message box", sms: "message", transaction: "order",
-  stripe: "the platform", paypal: "the platform", rating: "feedback", rate: "feedback",
-  review: "feedback", euro: "amount", dollar: "amount", money: "amount", pay: "order",
-  outside: "here", contact: "reach me here", email: "message", gmail: "message",
-  mail: "message", "@": "at",
+  crypto: "", payment: "", instagram: "", linkedin: "",
+  facebook: "", negative: "", star: "", transferwise: "",
+  account: "", bank: "", messenger: "", skype: "",
+  card: "", credit: "", purchase: "", whatsapp: "",
+  password: "", inbox: "", sms: "", transaction: "",
+  stripe: "", paypal: "", rating: "", rate: "",
+  review: "", euro: "", dollar: "", money: "", pay: "",
+  outside: "", contact: "", email: "", gmail: "",
+  mail: "", "@": "(at)",
+};
+
+// Insert a hyphen inside a word so it bypasses keyword filters
+// while staying readable. Examples: mail -> ma-il, pay -> pa-y, crypto -> cr-ypto.
+const hyphenate = (word: string) => {
+  if (word.length < 2) return word;
+  // Special-case symbols (already mapped to a literal replacement above).
+  if (!/[a-z]/i.test(word)) return word;
+  const cut = Math.min(2, word.length - 1);
+  return word.slice(0, cut) + "-" + word.slice(cut);
+};
+
+// Preserve the original casing of `match` when applying `replacement`.
+const matchCase = (match: string, replacement: string) => {
+  if (match.toUpperCase() === match) return replacement.toUpperCase();
+  if (match[0] === match[0].toUpperCase()) {
+    return replacement[0].toUpperCase() + replacement.slice(1);
+  }
+  return replacement;
 };
 
 const Index = () => {
