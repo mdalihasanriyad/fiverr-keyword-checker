@@ -54,7 +54,7 @@ const KeywordEditor = ({ open, onClose, keywords, onChange, onReset }: Props) =>
           <div>
             <h2 className="text-xl font-bold text-neon">Edit Keywords</h2>
             <p className="text-xs text-[hsl(var(--foreground))/0.6] mt-0.5">
-              Customize forbidden keywords and their replacements
+              Leave replacement empty to auto-hyphenate (e.g. <span className="text-neon">mail → ma-il</span>)
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -89,7 +89,7 @@ const KeywordEditor = ({ open, onClose, keywords, onChange, onReset }: Props) =>
               value={newRep}
               onChange={(e) => setNewRep(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && add()}
-              placeholder="Replacement (optional)"
+              placeholder="Replacement (empty = auto-hyphenate)"
               className="rounded-md bg-[hsl(var(--background))] border border-[hsl(var(--panel-border))] px-3 py-2 text-sm outline-none focus:border-[hsl(var(--neon))]"
             />
             <button
@@ -117,7 +117,8 @@ const KeywordEditor = ({ open, onClose, keywords, onChange, onReset }: Props) =>
                 <input
                   value={rep}
                   onChange={(e) => updateReplacement(kw, e.target.value)}
-                  className="rounded bg-[hsl(var(--panel))] border border-[hsl(var(--panel-border))/0.5] px-2 py-1 text-sm outline-none focus:border-[hsl(var(--neon))]"
+                  placeholder={`auto: ${hyphenatePreview(kw)}`}
+                  className="rounded bg-[hsl(var(--panel))] border border-[hsl(var(--panel-border))/0.5] px-2 py-1 text-sm outline-none focus:border-[hsl(var(--neon))] placeholder:text-[hsl(var(--neon))/0.5] placeholder:italic"
                 />
                 <button
                   onClick={() => remove(kw)}
