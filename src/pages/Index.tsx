@@ -79,10 +79,12 @@ const Index = () => {
 
   const rewrite = () => {
     let out = text;
-    FORBIDDEN_KEYWORDS.forEach((kw) => {
+    keywordList.forEach((kw) => {
       const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const pattern = kw === "@" ? new RegExp(escaped, "gi") : new RegExp(`\\b${escaped}\\b`, "gi");
-      const replacement = REPLACEMENTS[kw] ?? "***";
+      const pattern = /^[a-z0-9]/i.test(kw)
+        ? new RegExp(`\\b${escaped}\\b`, "gi")
+        : new RegExp(escaped, "gi");
+      const replacement = keywords[kw] ?? "***";
       out = out.replace(pattern, replacement);
     });
     setText(out);
@@ -143,7 +145,7 @@ const Index = () => {
                 <h3 className="text-sm font-bold tracking-wider text-neon uppercase">Preview with Highlights</h3>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => setEditing((e) => !e)}
+                    onClick={() => setEditorOpen(true)}
                     className="inline-flex items-center gap-1.5 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-2.5 py-1 text-xs text-neon hover:bg-[hsl(var(--neon))/0.15]"
                   >
                     <Pencil className="h-3.5 w-3.5" /> Edit
