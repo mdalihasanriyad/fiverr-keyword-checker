@@ -251,11 +251,19 @@ const Index = () => {
 
         {/* Forbidden keywords list */}
         <div className="panel p-5 mt-6">
-          <h3 className="text-sm font-bold tracking-wider text-neon uppercase mb-3">
-            Forbidden Keywords ({FORBIDDEN_KEYWORDS.length})
-          </h3>
+          <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+            <h3 className="text-sm font-bold tracking-wider text-neon uppercase">
+              Forbidden Keywords ({keywordList.length})
+            </h3>
+            <button
+              onClick={() => setEditorOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-3 py-1.5 text-xs text-neon hover:bg-[hsl(var(--neon))/0.15]"
+            >
+              <Settings className="h-3.5 w-3.5" /> Manage Keywords
+            </button>
+          </div>
           <div className="flex flex-wrap gap-2">
-            {FORBIDDEN_KEYWORDS.map((kw) => {
+            {keywordList.map((kw) => {
               const isHit = uniqueDetected.includes(kw.toLowerCase());
               return (
                 <span
@@ -277,6 +285,14 @@ const Index = () => {
           📌 Always review your content before posting on Fiverr
         </p>
       </div>
+
+      <KeywordEditor
+        open={editorOpen}
+        onClose={() => setEditorOpen(false)}
+        keywords={keywords}
+        onChange={setKeywords}
+        onReset={() => setKeywords(DEFAULT_KEYWORDS)}
+      />
     </div>
   );
 };
