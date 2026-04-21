@@ -16,69 +16,41 @@ const DEFAULT_KEYWORDS: KeywordMap = {
   mail: "message", "@": "at",
 };
 
-const FORBIDDEN_KEYWORDS = [
-  "crypto", "payment", "instagram", "linkedin", "facebook", "negative", "star",
-  "transferwise", "account", "bank", "messenger", "skype", "card", "credit",
-  "purchase", "whatsapp", "password", "inbox", "sms", "transaction", "stripe",
-  "paypal", "rating", "rate", "review", "euro", "dollar", "money", "pay",
-  "outside", "contact", "email", "gmail", "mail", "@",
-];
-
-const REPLACEMENTS: Record<string, string> = {
-  mail: "message",
-  email: "message",
-  gmail: "message",
-  inbox: "message box",
-  contact: "reach me here",
-  whatsapp: "this platform",
-  skype: "this platform",
-  messenger: "this platform",
-  instagram: "this platform",
-  facebook: "this platform",
-  linkedin: "this platform",
-  outside: "here",
-  payment: "order",
-  pay: "order",
-  paypal: "the platform",
-  stripe: "the platform",
-  transferwise: "the platform",
-  bank: "the platform",
-  card: "the platform",
-  credit: "the platform",
-  account: "profile",
-  password: "details",
-  sms: "message",
-  transaction: "order",
-  money: "amount",
-  dollar: "amount",
-  euro: "amount",
-  purchase: "order",
-  review: "feedback",
-  rating: "feedback",
-  rate: "feedback",
-  star: "feedback",
-  negative: "less positive",
-  crypto: "asset",
-  "@": "at",
-};
-
 const Index = () => {
   const [text, setText] = useState("hello there\n\nhope you are doing well\n\nplease check my mail");
-  const [editing, setEditing] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [keywords, setKeywords] = useState<KeywordMap>(() => {
+    if (typeof window === "undefined") return DEFAULT_KEYWORDS;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw) as KeywordMap;
+    } catch {}
+    return DEFAULT_KEYWORDS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(keywords));
+    } catch {}
+  }, [keywords]);
+
+  const keywordList = useMemo(() => Object.keys(keywords), [keywords]);
 
   const detected = useMemo(() => {
     const found: { keyword: string; index: number; length: number }[] = [];
     if (!text) return found;
-    FORBIDDEN_KEYWORDS.forEach((kw) => {
+    keywordList.forEach((kw) => {
       const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const pattern = kw === "@" ? new RegExp(escaped, "gi") : new RegExp(`\\b${escaped}\\b`, "gi");
+      const pattern = /^[a-z0-9]/i.test(kw)
+        ? new RegExp(`\\b${escaped}\\b`, "gi")
+        : new RegExp(escaped, "gi");
       let m: RegExpExecArray | null;
       while ((m = pattern.exec(text)) !== null) {
         found.push({ keyword: kw, index: m.index, length: m[0].length });
       }
     });
     return found.sort((a, b) => a.index - b.index);
-  }, [text]);
+  }, [text, keywordList]);
 
   const uniqueDetected = useMemo(
     () => Array.from(new Set(detected.map((d) => d.keyword.toLowerCase()))),
