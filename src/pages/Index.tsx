@@ -105,8 +105,10 @@ const Index = () => {
       const pattern = /^[a-z0-9]/i.test(kw)
         ? new RegExp(`\\b${escaped}\\b`, "gi")
         : new RegExp(escaped, "gi");
-      const replacement = keywords[kw] ?? "***";
-      out = out.replace(pattern, replacement);
+      const custom = (keywords[kw] ?? "").trim();
+      out = out.replace(pattern, (match) =>
+        custom ? matchCase(match, custom) : hyphenate(match),
+      );
     });
     setText(out);
   };
