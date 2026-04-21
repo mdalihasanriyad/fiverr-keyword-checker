@@ -1,5 +1,20 @@
-import { useMemo, useState } from "react";
-import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings } from "lucide-react";
+import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
+
+const STORAGE_KEY = "keyword-guard:keywords-v1";
+
+const DEFAULT_KEYWORDS: KeywordMap = {
+  crypto: "asset", payment: "order", instagram: "this platform", linkedin: "this platform",
+  facebook: "this platform", negative: "less positive", star: "feedback", transferwise: "the platform",
+  account: "profile", bank: "the platform", messenger: "this platform", skype: "this platform",
+  card: "the platform", credit: "the platform", purchase: "order", whatsapp: "this platform",
+  password: "details", inbox: "message box", sms: "message", transaction: "order",
+  stripe: "the platform", paypal: "the platform", rating: "feedback", rate: "feedback",
+  review: "feedback", euro: "amount", dollar: "amount", money: "amount", pay: "order",
+  outside: "here", contact: "reach me here", email: "message", gmail: "message",
+  mail: "message", "@": "at",
+};
 
 const FORBIDDEN_KEYWORDS = [
   "crypto", "payment", "instagram", "linkedin", "facebook", "negative", "star",
