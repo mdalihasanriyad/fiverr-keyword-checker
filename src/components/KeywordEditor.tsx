@@ -32,9 +32,15 @@ const KeywordEditor = ({ open, onClose, keywords, onChange, onReset }: Props) =>
   const add = () => {
     const kw = newKw.trim().toLowerCase();
     if (!kw) return;
-    onChange({ ...keywords, [kw]: newRep.trim() || "***" });
+    onChange({ ...keywords, [kw]: newRep.trim() });
     setNewKw("");
     setNewRep("");
+  };
+
+  const hyphenatePreview = (word: string) => {
+    if (word.length < 2 || !/[a-z]/i.test(word)) return word;
+    const cut = Math.min(2, word.length - 1);
+    return word.slice(0, cut) + "-" + word.slice(cut);
   };
 
   return (
