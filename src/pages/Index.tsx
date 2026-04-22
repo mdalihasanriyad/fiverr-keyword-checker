@@ -35,9 +35,12 @@ const Index = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-resize textarea: grows with content, capped at responsive max height.
+  // Debounced via requestAnimationFrame so it stays smooth on large inputs.
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
+
+    let frame = 0;
     const resize = () => {
       el.style.height = "auto";
       const isMobile = window.matchMedia("(max-width: 639px)").matches;
@@ -46,9 +49,34 @@ const Index = () => {
       const min = isMobile ? 140 : 200;
       el.style.height = Math.max(min, Math.min(el.scrollHeight, max)) + "px";
     };
-    resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    const scheduleResize = () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(resize);
+    };
+
+    scheduleResize();
+    el.addEventListener("input", scheduleResize);
+    window.addEventListener("resize", scheduleResize);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      el.removeEventListener("input", scheduleResize);
+      window.removeEventListener("resize", scheduleResize);
+    };
+  }, []);
+
+  // Re-measure when text is set programmatically (Clear, Rewrite, etc.)
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const id = requestAnimationFrame(() => {
+      el.style.height = "auto";
+      const isMobile = window.matchMedia("(max-width: 639px)").matches;
+      const isTablet = window.matchMedia("(max-width: 1023px)").matches;
+      const max = isMobile ? 260 : isTablet ? 360 : 460;
+      const min = isMobile ? 140 : 200;
+      el.style.height = Math.max(min, Math.min(el.scrollHeight, max)) + "px";
+    });
+    return () => cancelAnimationFrame(id);
   }, [text]);
   const [editorOpen, setEditorOpen] = useState(false);
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
