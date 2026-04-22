@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings } from "lucide-react";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
@@ -32,6 +32,24 @@ const matchCase = (match: string, replacement: string) => {
 
 const Index = () => {
   const [text, setText] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea: grows with content, capped at responsive max height.
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const resize = () => {
+      el.style.height = "auto";
+      const isMobile = window.matchMedia("(max-width: 639px)").matches;
+      const isTablet = window.matchMedia("(max-width: 1023px)").matches;
+      const max = isMobile ? 260 : isTablet ? 360 : 460;
+      const min = isMobile ? 140 : 200;
+      el.style.height = Math.max(min, Math.min(el.scrollHeight, max)) + "px";
+    };
+    resize();
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, [text]);
   const [editorOpen, setEditorOpen] = useState(false);
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
@@ -146,10 +164,12 @@ const Index = () => {
           {/* Input */}
           <div className="panel glow-neon p-3 sm:p-4 relative flex flex-col gap-3">
             <textarea
+              ref={textareaRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Paste your Fiverr message here..."
-              className="w-full h-[260px] sm:h-[360px] lg:h-[460px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3] custom-scroll"
+              rows={5}
+              className="w-full min-h-[140px] sm:min-h-[200px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3] custom-scroll overflow-y-auto"
             />
             <div className="flex justify-end gap-2">
               <button
