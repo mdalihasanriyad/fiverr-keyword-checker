@@ -114,7 +114,7 @@ const Index = () => {
         : new RegExp(escaped, "gi");
       const custom = (keywords[kw] ?? "").trim();
       out = out.replace(pattern, (match) =>
-        custom ? matchCase(match, custom) : hyphenate(match),
+        custom ? matchCase(match, custom) : hyphenateWith(match, hyphenStyle),
       );
     });
     setText(out);
@@ -258,7 +258,7 @@ const Index = () => {
                       <span className="text-[hsl(var(--foreground))/0.6]">{kw}</span>
                       <span className="text-[hsl(var(--foreground))/0.4]">=</span>
                       <span className="rounded-md bg-[hsl(var(--background))] border border-[hsl(var(--panel-border))/0.5] px-2 py-0.5">
-                        {(keywords[kw] ?? "").trim() || hyphenate(kw)}
+                        {(keywords[kw] ?? "").trim() || hyphenateWith(kw, hyphenStyle)}
                       </span>
                     </div>
                   ))}
@@ -322,6 +322,8 @@ const Index = () => {
         keywords={keywords}
         onChange={setKeywords}
         onReset={() => setKeywords(DEFAULT_KEYWORDS)}
+        hyphenStyle={hyphenStyle}
+        onHyphenStyleChange={setHyphenStyle}
       />
     </div>
   );
