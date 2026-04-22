@@ -112,9 +112,22 @@ const KeywordEditor = ({ open, onClose, keywords, onChange, onReset, hyphenStyle
               );
             })}
           </div>
-        </div>
 
-        {/* Add new */}
+          {/* Live examples */}
+          <div className="mt-4 rounded-md border border-[hsl(var(--panel-border))/0.5] bg-[hsl(var(--background))/0.5] p-3">
+            <div className="text-[10px] uppercase tracking-wider text-neon font-bold mb-2">
+              Live Examples (current: {HYPHEN_STYLE_LABELS[hyphenStyle]})
+            </div>
+            <div className="grid grid-cols-3 gap-2 font-mono text-xs">
+              {["payment", "mail", "crypto"].map((w) => (
+                <div key={w} className="flex flex-col items-center gap-1 rounded bg-[hsl(var(--panel))] border border-[hsl(var(--panel-border))/0.4] p-2">
+                  <span className="text-[hsl(var(--foreground))/0.5] line-through">{w}</span>
+                  <span className="text-neon font-bold">{hyphenateWith(w, hyphenStyle)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
         <div className="p-5 border-b border-[hsl(var(--panel-border))/0.5]">
           <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2">
             <input
