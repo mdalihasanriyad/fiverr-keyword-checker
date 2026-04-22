@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Trash2, RotateCcw, X } from "lucide-react";
+import { hyphenateWith, HYPHEN_STYLE_LABELS, type HyphenStyle } from "@/lib/hyphenate";
 
 export type KeywordMap = Record<string, string>;
 
@@ -9,9 +10,11 @@ interface Props {
   keywords: KeywordMap;
   onChange: (next: KeywordMap) => void;
   onReset: () => void;
+  hyphenStyle: HyphenStyle;
+  onHyphenStyleChange: (style: HyphenStyle) => void;
 }
 
-const KeywordEditor = ({ open, onClose, keywords, onChange, onReset }: Props) => {
+const KeywordEditor = ({ open, onClose, keywords, onChange, onReset, hyphenStyle, onHyphenStyleChange }: Props) => {
   const [newKw, setNewKw] = useState("");
   const [newRep, setNewRep] = useState("");
 
@@ -37,11 +40,9 @@ const KeywordEditor = ({ open, onClose, keywords, onChange, onReset }: Props) =>
     setNewRep("");
   };
 
-  const hyphenatePreview = (word: string) => {
-    if (word.length < 2 || !/[a-z]/i.test(word)) return word;
-    const cut = Math.min(2, word.length - 1);
-    return word.slice(0, cut) + "-" + word.slice(cut);
-  };
+  const hyphenatePreview = (word: string) => hyphenateWith(word, hyphenStyle);
+
+  const styleOptions: HyphenStyle[] = ["after-second", "middle", "after-first-vowel"];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
@@ -72,6 +73,34 @@ const KeywordEditor = ({ open, onClose, keywords, onChange, onReset }: Props) =>
             >
               <X className="h-4 w-4" />
             </button>
+          </div>
+        </div>
+
+        {/* Hyphenation style */}
+        <div className="p-5 border-b border-[hsl(var(--panel-border))/0.5]">
+          <div className="text-xs uppercase tracking-wider text-neon font-bold mb-2">
+            Hyphenation Style
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {styleOptions.map((opt) => {
+              const active = hyphenStyle === opt;
+              return (
+                <button
+                  key={opt}
+                  onClick={() => onHyphenStyleChange(opt)}
+                  className={
+                    active
+                      ? "rounded-md border border-[hsl(var(--neon))] bg-[hsl(var(--neon))/0.15] text-neon px-3 py-2 text-xs font-bold text-left"
+                      : "rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] text-[hsl(var(--foreground))/0.8] px-3 py-2 text-xs text-left hover:bg-[hsl(var(--neon))/0.08]"
+                  }
+                >
+                  <div>{HYPHEN_STYLE_LABELS[opt]}</div>
+                  <div className="font-mono text-[10px] mt-0.5 opacity-70">
+                    payment → {hyphenateWith("payment", opt)}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
