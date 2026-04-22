@@ -142,14 +142,14 @@ const Index = () => {
         </div>
 
         {/* Main grid */}
-        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 lg:grid-cols-2">
           {/* Input */}
-          <div className="panel glow-neon p-4 relative flex flex-col gap-3">
+          <div className="panel glow-neon p-3 sm:p-4 relative flex flex-col gap-3">
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Paste your Fiverr message here..."
-              className="w-full h-[460px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3] custom-scroll"
+              className="w-full h-[260px] sm:h-[360px] lg:h-[460px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3] custom-scroll"
             />
             <div className="flex justify-end gap-2">
               <button
