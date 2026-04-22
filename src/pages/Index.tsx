@@ -4,6 +4,8 @@ import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
 const STORAGE_KEY = "keyword-guard:keywords-v2";
+const TEXT_KEY = "keyword-guard:text-v1";
+const TEXTAREA_STATE_KEY = "keyword-guard:textarea-state-v1";
 
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
@@ -31,8 +33,26 @@ const matchCase = (match: string, replacement: string) => {
 };
 
 const Index = () => {
-  const [text, setText] = useState("");
+  const [text, setText] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    try {
+      return localStorage.getItem(TEXT_KEY) ?? "";
+    } catch {
+      return "";
+    }
+  });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const restoredRef = useRef(false);
+
+  // Helper: compute capped height based on viewport.
+  const computeHeight = (el: HTMLTextAreaElement) => {
+    el.style.height = "auto";
+    const isMobile = window.matchMedia("(max-width: 639px)").matches;
+    const isTablet = window.matchMedia("(max-width: 1023px)").matches;
+    const max = isMobile ? 260 : isTablet ? 360 : 460;
+    const min = isMobile ? 140 : 200;
+    return Math.max(min, Math.min(el.scrollHeight, max));
+  };
 
   // Auto-resize textarea: grows with content, capped at responsive max height.
   // Debounced via requestAnimationFrame so it stays smooth on large inputs.
@@ -41,25 +61,70 @@ const Index = () => {
     if (!el) return;
 
     let frame = 0;
+    let saveTimer: ReturnType<typeof setTimeout> | undefined;
+
     const resize = () => {
-      el.style.height = "auto";
-      const isMobile = window.matchMedia("(max-width: 639px)").matches;
-      const isTablet = window.matchMedia("(max-width: 1023px)").matches;
-      const max = isMobile ? 260 : isTablet ? 360 : 460;
-      const min = isMobile ? 140 : 200;
-      el.style.height = Math.max(min, Math.min(el.scrollHeight, max)) + "px";
+      const h = computeHeight(el);
+      el.style.height = h + "px";
+      // Persist height + scroll (debounced).
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        try {
+          localStorage.setItem(
+            TEXTAREA_STATE_KEY,
+            JSON.stringify({ height: h, scrollTop: el.scrollTop }),
+          );
+        } catch {}
+      }, 200);
     };
     const scheduleResize = () => {
       if (frame) cancelAnimationFrame(frame);
       frame = requestAnimationFrame(resize);
     };
+    const saveScroll = () => {
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        try {
+          const raw = localStorage.getItem(TEXTAREA_STATE_KEY);
+          const prev = raw ? JSON.parse(raw) : {};
+          localStorage.setItem(
+            TEXTAREA_STATE_KEY,
+            JSON.stringify({ ...prev, scrollTop: el.scrollTop }),
+          );
+        } catch {}
+      }, 150);
+    };
 
-    scheduleResize();
+    // Restore previous height + scroll on first mount.
+    if (!restoredRef.current) {
+      restoredRef.current = true;
+      try {
+        const raw = localStorage.getItem(TEXTAREA_STATE_KEY);
+        if (raw) {
+          const { height, scrollTop } = JSON.parse(raw) as {
+            height?: number;
+            scrollTop?: number;
+          };
+          if (typeof height === "number") el.style.height = height + "px";
+          requestAnimationFrame(() => {
+            if (typeof scrollTop === "number") el.scrollTop = scrollTop;
+          });
+        } else {
+          scheduleResize();
+        }
+      } catch {
+        scheduleResize();
+      }
+    }
+
     el.addEventListener("input", scheduleResize);
+    el.addEventListener("scroll", saveScroll);
     window.addEventListener("resize", scheduleResize);
     return () => {
       if (frame) cancelAnimationFrame(frame);
+      if (saveTimer) clearTimeout(saveTimer);
       el.removeEventListener("input", scheduleResize);
+      el.removeEventListener("scroll", saveScroll);
       window.removeEventListener("resize", scheduleResize);
     };
   }, []);
@@ -69,15 +134,18 @@ const Index = () => {
     const el = textareaRef.current;
     if (!el) return;
     const id = requestAnimationFrame(() => {
-      el.style.height = "auto";
-      const isMobile = window.matchMedia("(max-width: 639px)").matches;
-      const isTablet = window.matchMedia("(max-width: 1023px)").matches;
-      const max = isMobile ? 260 : isTablet ? 360 : 460;
-      const min = isMobile ? 140 : 200;
-      el.style.height = Math.max(min, Math.min(el.scrollHeight, max)) + "px";
+      el.style.height = computeHeight(el) + "px";
     });
     return () => cancelAnimationFrame(id);
   }, [text]);
+
+  // Persist the text itself.
+  useEffect(() => {
+    try {
+      localStorage.setItem(TEXT_KEY, text);
+    } catch {}
+  }, [text]);
+
   const [editorOpen, setEditorOpen] = useState(false);
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
