@@ -4,6 +4,8 @@ import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
 const STORAGE_KEY = "keyword-guard:keywords-v2";
+const TEXT_KEY = "keyword-guard:text-v1";
+const TEXTAREA_STATE_KEY = "keyword-guard:textarea-state-v1";
 
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
