@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings } from "lucide-react";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
+import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
 const STORAGE_KEY = "keyword-guard:keywords-v2";
 
@@ -18,15 +19,7 @@ const DEFAULT_KEYWORDS: KeywordMap = {
   mail: "", "@": "(at)",
 };
 
-// Insert a hyphen inside a word so it bypasses keyword filters
-// while staying readable. Examples: mail -> ma-il, pay -> pa-y, crypto -> cr-ypto.
-const hyphenate = (word: string) => {
-  if (word.length < 2) return word;
-  // Special-case symbols (already mapped to a literal replacement above).
-  if (!/[a-z]/i.test(word)) return word;
-  const cut = Math.min(2, word.length - 1);
-  return word.slice(0, cut) + "-" + word.slice(cut);
-};
+// Hyphenation helpers live in src/lib/hyphenate.ts.
 
 // Preserve the original casing of `match` when applying `replacement`.
 const matchCase = (match: string, replacement: string) => {
@@ -40,6 +33,14 @@ const matchCase = (match: string, replacement: string) => {
 const Index = () => {
   const [text, setText] = useState("hello there\n\nhope you are doing well\n\nplease check my mail");
   const [editorOpen, setEditorOpen] = useState(false);
+  const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
+    if (typeof window === "undefined") return "after-second";
+    try {
+      const raw = localStorage.getItem(HYPHEN_STYLE_KEY);
+      if (raw === "after-second" || raw === "middle" || raw === "after-first-vowel") return raw;
+    } catch {}
+    return "after-second";
+  });
   const [keywords, setKeywords] = useState<KeywordMap>(() => {
     if (typeof window === "undefined") return DEFAULT_KEYWORDS;
     try {
@@ -54,6 +55,12 @@ const Index = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(keywords));
     } catch {}
   }, [keywords]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(HYPHEN_STYLE_KEY, hyphenStyle);
+    } catch {}
+  }, [hyphenStyle]);
 
   const keywordList = useMemo(() => Object.keys(keywords), [keywords]);
 
