@@ -31,7 +31,7 @@ const matchCase = (match: string, replacement: string) => {
 };
 
 const Index = () => {
-  const [text, setText] = useState("hello there\n\nhope you are doing well\n\nplease check my mail");
+  const [text, setText] = useState("");
   const [editorOpen, setEditorOpen] = useState(false);
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
@@ -144,12 +144,12 @@ const Index = () => {
         {/* Main grid */}
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           {/* Input */}
-          <div className="panel glow-neon p-4 relative">
+          <div className="panel glow-neon p-4 relative flex flex-col gap-3">
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Paste your Fiverr message here..."
-              className="w-full h-[460px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3]"
+              className="w-full h-[460px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3] custom-scroll"
             />
             <div className="flex justify-end gap-2">
               <button
