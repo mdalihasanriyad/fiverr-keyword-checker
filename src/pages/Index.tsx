@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings } from "lucide-react";
+import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw } from "lucide-react";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
@@ -235,6 +235,19 @@ const Index = () => {
   };
 
   const copy = (val: string) => navigator.clipboard.writeText(val);
+
+  const resetEditor = () => {
+    try {
+      localStorage.removeItem(TEXT_KEY);
+      localStorage.removeItem(TEXTAREA_STATE_KEY);
+    } catch {}
+    setText("");
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = "";
+      el.scrollTop = 0;
+    }
+  };
   const violations = detected.length;
   const clean = violations === 0;
 
@@ -267,7 +280,7 @@ const Index = () => {
               rows={5}
               className="w-full min-h-[140px] sm:min-h-[200px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3] custom-scroll overflow-y-auto"
             />
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               <button
                 onClick={() => copy(text)}
                 className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--neon))/0.08] transition"
@@ -279,6 +292,13 @@ const Index = () => {
                 className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--danger))/0.15] transition"
               >
                 <Trash2 className="h-4 w-4" /> Clear
+              </button>
+              <button
+                onClick={resetEditor}
+                title="Clear text and reset saved height/scroll"
+                className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--neon))/0.08] transition"
+              >
+                <RefreshCw className="h-4 w-4" /> Reset editor
               </button>
             </div>
           </div>
