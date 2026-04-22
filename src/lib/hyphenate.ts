@@ -1,6 +1,7 @@
 export type HyphenStyle = "after-second" | "middle" | "after-first-vowel";
 
 export const HYPHEN_STYLE_KEY = "keyword-guard:hyphen-style-v1";
+export const DEFAULT_HYPHEN_STYLE: HyphenStyle = "after-second";
 
 export const HYPHEN_STYLE_LABELS: Record<HyphenStyle, string> = {
   "after-second": "After 2nd character",

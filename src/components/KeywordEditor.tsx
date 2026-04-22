@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus, Trash2, RotateCcw, X } from "lucide-react";
-import { hyphenateWith, HYPHEN_STYLE_LABELS, type HyphenStyle } from "@/lib/hyphenate";
+import { hyphenateWith, HYPHEN_STYLE_LABELS, DEFAULT_HYPHEN_STYLE, type HyphenStyle } from "@/lib/hyphenate";
 
 export type KeywordMap = Record<string, string>;
 
@@ -78,8 +78,18 @@ const KeywordEditor = ({ open, onClose, keywords, onChange, onReset, hyphenStyle
 
         {/* Hyphenation style */}
         <div className="p-5 border-b border-[hsl(var(--panel-border))/0.5]">
-          <div className="text-xs uppercase tracking-wider text-neon font-bold mb-2">
-            Hyphenation Style
+          <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+            <div className="text-xs uppercase tracking-wider text-neon font-bold">
+              Hyphenation Style
+            </div>
+            <button
+              onClick={() => onHyphenStyleChange(DEFAULT_HYPHEN_STYLE)}
+              disabled={hyphenStyle === DEFAULT_HYPHEN_STYLE}
+              className="inline-flex items-center gap-1.5 rounded-md border border-[hsl(var(--panel-border))] px-2.5 py-1 text-xs hover:bg-[hsl(var(--neon))/0.08] disabled:opacity-40 disabled:cursor-not-allowed"
+              title={`Reset to "${HYPHEN_STYLE_LABELS[DEFAULT_HYPHEN_STYLE]}"`}
+            >
+              <RotateCcw className="h-3.5 w-3.5" /> Reset hyphenation style
+            </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {styleOptions.map((opt) => {
