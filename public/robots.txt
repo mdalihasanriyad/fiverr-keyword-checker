@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://fiverr-keyword-checker.lovable.app/sitemap.xml
+Sitemap: https://fiverr-keyword-checker.vercel.app/sitemap.xml
