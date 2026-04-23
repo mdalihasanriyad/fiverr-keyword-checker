@@ -222,7 +222,9 @@ const Index = () => {
 
   const rewrite = () => {
     if (detected.length === 0) {
-      toast.info("Nothing to rewrite — your text is already clean.");
+      toast.info("Nothing to rewrite", {
+        description: "No forbidden keywords found in your text.",
+      });
       return;
     }
     let out = text;
@@ -236,30 +238,49 @@ const Index = () => {
         custom ? matchCase(match, custom) : hyphenateWith(match, hyphenStyle),
       );
     });
+    const count = detected.length;
+    const uniqueCount = uniqueDetected.length;
     setText(out);
-    toast.success(`Rewrote ${detected.length} keyword${detected.length > 1 ? "s" : ""}.`);
+    toast.success(`Rewrote ${count} keyword${count > 1 ? "s" : ""}`, {
+      description: `${uniqueCount} unique keyword${uniqueCount > 1 ? "s" : ""} replaced across your text.`,
+    });
   };
 
   const copy = async (val: string) => {
     if (!val) {
-      toast.error("Nothing to copy.");
+      toast.error("Nothing to copy", {
+        description: "Your text is empty.",
+      });
       return;
     }
     try {
       await navigator.clipboard.writeText(val);
-      toast.success("Copied to clipboard");
+      const chars = val.length;
+      const words = val.trim().split(/\s+/).filter(Boolean).length;
+      toast.success("Copied to clipboard", {
+        description: `${chars} character${chars !== 1 ? "s" : ""} · ${words} word${words !== 1 ? "s" : ""} copied.`,
+      });
     } catch {
-      toast.error("Failed to copy");
+      toast.error("Copy failed", {
+        description: "Clipboard access was blocked by your browser.",
+      });
     }
   };
 
   const clearText = () => {
     if (!text) {
-      toast.info("Already empty.");
+      toast.info("Nothing to clear", {
+        description: "The editor is already empty.",
+      });
       return;
     }
+    const count = detected.length;
     setText("");
-    toast.success("Text cleared");
+    toast.success("Text cleared", {
+      description: count > 0
+        ? `Removed your text along with ${count} flagged keyword${count > 1 ? "s" : ""}.`
+        : "Your editor is now empty.",
+    });
   };
 
   const resetEditor = () => {
@@ -273,7 +294,9 @@ const Index = () => {
       el.style.height = "";
       el.scrollTop = 0;
     }
-    toast.success("Editor reset");
+    toast.success("Editor reset", {
+      description: "Text, height, and scroll position restored to defaults.",
+    });
   };
   const violations = detected.length;
   const clean = violations === 0;
