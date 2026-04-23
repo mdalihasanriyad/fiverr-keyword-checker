@@ -315,7 +315,7 @@ const Index = () => {
                 <Copy className="h-4 w-4" /> Copy
               </button>
               <button
-                onClick={() => setText("")}
+                onClick={clearText}
                 className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--danger))/0.15] transition"
               >
                 <Trash2 className="h-4 w-4" /> Clear
