@@ -221,6 +221,10 @@ const Index = () => {
   }, [text, detected]);
 
   const rewrite = () => {
+    if (detected.length === 0) {
+      toast.info("Nothing to rewrite — your text is already clean.");
+      return;
+    }
     let out = text;
     keywordList.forEach((kw) => {
       const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -233,9 +237,30 @@ const Index = () => {
       );
     });
     setText(out);
+    toast.success(`Rewrote ${detected.length} keyword${detected.length > 1 ? "s" : ""}.`);
   };
 
-  const copy = (val: string) => navigator.clipboard.writeText(val);
+  const copy = async (val: string) => {
+    if (!val) {
+      toast.error("Nothing to copy.");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(val);
+      toast.success("Copied to clipboard");
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
+  const clearText = () => {
+    if (!text) {
+      toast.info("Already empty.");
+      return;
+    }
+    setText("");
+    toast.success("Text cleared");
+  };
 
   const resetEditor = () => {
     try {
@@ -248,6 +273,7 @@ const Index = () => {
       el.style.height = "";
       el.scrollTop = 0;
     }
+    toast.success("Editor reset");
   };
   const violations = detected.length;
   const clean = violations === 0;
