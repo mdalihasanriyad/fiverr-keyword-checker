@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
@@ -220,6 +221,10 @@ const Index = () => {
   }, [text, detected]);
 
   const rewrite = () => {
+    if (detected.length === 0) {
+      toast.info("Nothing to rewrite — your text is already clean.");
+      return;
+    }
     let out = text;
     keywordList.forEach((kw) => {
       const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -232,9 +237,30 @@ const Index = () => {
       );
     });
     setText(out);
+    toast.success(`Rewrote ${detected.length} keyword${detected.length > 1 ? "s" : ""}.`);
   };
 
-  const copy = (val: string) => navigator.clipboard.writeText(val);
+  const copy = async (val: string) => {
+    if (!val) {
+      toast.error("Nothing to copy.");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(val);
+      toast.success("Copied to clipboard");
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
+  const clearText = () => {
+    if (!text) {
+      toast.info("Already empty.");
+      return;
+    }
+    setText("");
+    toast.success("Text cleared");
+  };
 
   const resetEditor = () => {
     try {
@@ -247,6 +273,7 @@ const Index = () => {
       el.style.height = "";
       el.scrollTop = 0;
     }
+    toast.success("Editor reset");
   };
   const violations = detected.length;
   const clean = violations === 0;
@@ -288,7 +315,7 @@ const Index = () => {
                 <Copy className="h-4 w-4" /> Copy
               </button>
               <button
-                onClick={() => setText("")}
+                onClick={clearText}
                 className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--danger))/0.15] transition"
               >
                 <Trash2 className="h-4 w-4" /> Clear
