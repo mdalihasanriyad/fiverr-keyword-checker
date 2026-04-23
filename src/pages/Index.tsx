@@ -271,16 +271,16 @@ const Index = () => {
         {/* Main grid */}
         <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 lg:grid-cols-2">
           {/* Input */}
-          <div className="panel glow-neon p-3 sm:p-4 relative flex flex-col gap-3">
+          <div className="panel glow-neon relative flex flex-col overflow-hidden">
             <textarea
               ref={textareaRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Paste your Fiverr message here..."
               rows={5}
-              className="w-full min-h-[140px] sm:min-h-[200px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3] custom-scroll overflow-y-auto"
+              className="w-full flex-1 min-h-[140px] sm:min-h-[200px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3] custom-scroll overflow-y-auto p-3 sm:p-4"
             />
-            <div className="flex flex-wrap justify-end gap-2">
+            <div className="flex flex-wrap justify-end gap-2 border-t border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.4] px-3 sm:px-4 py-2">
               <button
                 onClick={() => copy(text)}
                 className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--neon))/0.08] transition"
