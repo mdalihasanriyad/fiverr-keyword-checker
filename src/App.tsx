@@ -5,6 +5,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import ForbiddenWords from "./pages/ForbiddenWords.tsx";
+import Compliance from "./pages/Compliance.tsx";
+import GigSeo from "./pages/GigSeo.tsx";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +19,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/forbidden-words" element={<ForbiddenWords />} />
+          <Route path="/compliance" element={<Compliance />} />
+          <Route path="/gig-seo" element={<GigSeo />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

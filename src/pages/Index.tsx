@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
+import { useSeo } from "@/lib/seo";
 
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
@@ -35,6 +37,13 @@ const matchCase = (match: string, replacement: string) => {
 };
 
 const Index = () => {
+  useSeo({
+    title: "Free Fiverr Keyword Checker Tool (Forbidden Keyword Detector)",
+    description:
+      "Free Fiverr Keyword Checker: instantly detect forbidden words, avoid bans, and boost gig SEO to rank higher and win more orders.",
+    canonical: "https://fiverr-keyword-checker.lovable.app/",
+  });
+
   const [text, setText] = useState<string>(() => {
     if (typeof window === "undefined") return "";
     try {
@@ -317,6 +326,17 @@ const Index = () => {
           <p className="text-muted-foreground/80 text-[hsl(var(--foreground))/0.6]">
             Check if your Fiverr content contains any forbidden keywords
           </p>
+          <nav aria-label="Related tools" className="flex flex-wrap items-center justify-center gap-2 pt-1">
+            <Link to="/forbidden-words" className="rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon transition">
+              Forbidden Words
+            </Link>
+            <Link to="/compliance" className="rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon transition">
+              Compliance
+            </Link>
+            <Link to="/gig-seo" className="rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon transition">
+              Gig SEO
+            </Link>
+          </nav>
         </div>
 
         {/* Main grid */}
