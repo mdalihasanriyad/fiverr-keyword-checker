@@ -502,6 +502,10 @@ const Index = () => {
         <p className="text-center text-sm text-[hsl(var(--foreground))/0.5] mt-10">
           📌 Always review your content before posting on Fiverr
         </p>
+
+        <footer className="mt-6 text-center text-xs text-[hsl(var(--foreground))/0.5]">
+          Developed by <span className="font-semibold text-neon">Sales CMS Claystone</span>
+        </footer>
       </div>
 
       <KeywordEditor
