@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
-import FaviconUploader from "@/components/FaviconUploader";
+
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
 const STORAGE_KEY = "keyword-guard:keywords-v2";
@@ -317,7 +317,6 @@ const Index = () => {
           <p className="text-muted-foreground/80 text-[hsl(var(--foreground))/0.6]">
             Check if your Fiverr content contains any forbidden keywords
           </p>
-          <FaviconUploader />
         </div>
 
         {/* Main grid */}
