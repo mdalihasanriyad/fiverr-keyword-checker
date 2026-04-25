@@ -188,7 +188,43 @@ const Index = () => {
     } catch {}
   }, [hyphenStyle]);
 
-  const keywordList = useMemo(() => Object.keys(keywords), [keywords]);
+
+  // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const modeParam = searchParams.get("mode");
+  const mode: CheckerMode = isCheckerMode(modeParam) ? modeParam : "all";
+
+  const setMode = (next: CheckerMode) => {
+    const params = new URLSearchParams(searchParams);
+    if (next === "all") params.delete("mode");
+    else params.set("mode", next);
+    setSearchParams(params, { replace: true });
+  };
+
+  const allKeywordList = useMemo(() => Object.keys(keywords), [keywords]);
+
+  // When a focused mode is active, restrict detection to that subset (intersected
+  // with the user's current keyword map so removed keywords don't reappear).
+  const keywordList = useMemo(() => {
+    if (mode === "all") return allKeywordList;
+    const allowed = new Set(MODE_KEYWORDS[mode]);
+    const filtered = allKeywordList.filter((k) => allowed.has(k.toLowerCase()));
+    return filtered.length > 0 ? filtered : allKeywordList;
+  }, [mode, allKeywordList]);
+
+  // Toast once when arriving from a landing page CTA so the user knows mode is active.
+  const announcedModeRef = useRef<CheckerMode | null>(null);
+  useEffect(() => {
+    if (mode === "all") {
+      announcedModeRef.current = "all";
+      return;
+    }
+    if (announcedModeRef.current === mode) return;
+    announcedModeRef.current = mode;
+    toast.success(`${MODE_LABEL[mode]} mode active`, {
+      description: MODE_DESCRIPTION[mode],
+    });
+  }, [mode]);
 
   const detected = useMemo(() => {
     const found: { keyword: string; index: number; length: number }[] = [];
