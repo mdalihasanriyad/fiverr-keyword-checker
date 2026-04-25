@@ -565,7 +565,7 @@ const Index = () => {
         <div className="panel p-5 mt-6">
           <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
             <h3 className="text-sm font-bold tracking-wider text-neon uppercase">
-              Forbidden Keywords ({keywordList.length})
+              {mode === "all" ? "Forbidden Keywords" : `${MODE_LABEL[mode]} Keywords`} ({keywordList.length})
             </h3>
             <button
               onClick={() => setEditorOpen(true)}
