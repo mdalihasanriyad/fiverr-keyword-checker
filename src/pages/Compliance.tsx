@@ -38,7 +38,7 @@ const Compliance = () => {
         </section>
 
         <Link
-          to="/"
+          to="/?mode=compliance"
           className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[hsl(var(--neon))] text-black font-bold px-5 py-3 hover:bg-[hsl(var(--neon-glow))] transition shadow-[0_0_30px_hsl(var(--neon)/0.4)]"
         >
           Run a compliance check <ArrowRight className="h-4 w-4" />

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw, Filter, X } from "lucide-react";
 import { toast } from "sonner";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 import { useSeo } from "@/lib/seo";
+import { type CheckerMode, MODE_KEYWORDS, MODE_LABEL, MODE_DESCRIPTION, isCheckerMode } from "@/lib/modes";
 
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
@@ -187,7 +188,43 @@ const Index = () => {
     } catch {}
   }, [hyphenStyle]);
 
-  const keywordList = useMemo(() => Object.keys(keywords), [keywords]);
+
+  // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const modeParam = searchParams.get("mode");
+  const mode: CheckerMode = isCheckerMode(modeParam) ? modeParam : "all";
+
+  const setMode = (next: CheckerMode) => {
+    const params = new URLSearchParams(searchParams);
+    if (next === "all") params.delete("mode");
+    else params.set("mode", next);
+    setSearchParams(params, { replace: true });
+  };
+
+  const allKeywordList = useMemo(() => Object.keys(keywords), [keywords]);
+
+  // When a focused mode is active, restrict detection to that subset (intersected
+  // with the user's current keyword map so removed keywords don't reappear).
+  const keywordList = useMemo(() => {
+    if (mode === "all") return allKeywordList;
+    const allowed = new Set(MODE_KEYWORDS[mode]);
+    const filtered = allKeywordList.filter((k) => allowed.has(k.toLowerCase()));
+    return filtered.length > 0 ? filtered : allKeywordList;
+  }, [mode, allKeywordList]);
+
+  // Toast once when arriving from a landing page CTA so the user knows mode is active.
+  const announcedModeRef = useRef<CheckerMode | null>(null);
+  useEffect(() => {
+    if (mode === "all") {
+      announcedModeRef.current = "all";
+      return;
+    }
+    if (announcedModeRef.current === mode) return;
+    announcedModeRef.current = mode;
+    toast.success(`${MODE_LABEL[mode]} mode active`, {
+      description: MODE_DESCRIPTION[mode],
+    });
+  }, [mode]);
 
   const detected = useMemo(() => {
     const found: { keyword: string; index: number; length: number }[] = [];
@@ -338,6 +375,44 @@ const Index = () => {
             </Link>
           </nav>
         </div>
+
+        {/* Mode switcher: preselected by landing page CTAs (?mode=). */}
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[hsl(var(--foreground))/0.55]">
+            <Filter className="h-3.5 w-3.5" /> Mode:
+          </span>
+          {(["all", "forbidden-words", "compliance", "gig-seo"] as const).map((m) => {
+            const active = mode === m;
+            return (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                aria-pressed={active}
+                className={
+                  active
+                    ? "rounded-full bg-[hsl(var(--neon))] text-black px-3 py-1 text-xs sm:text-sm font-semibold shadow-[0_0_18px_hsl(var(--neon)/0.45)]"
+                    : "rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon transition"
+                }
+              >
+                {MODE_LABEL[m]}
+              </button>
+            );
+          })}
+          {mode !== "all" && (
+            <button
+              onClick={() => setMode("all")}
+              aria-label="Clear mode filter"
+              className="inline-flex items-center gap-1 rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-2.5 py-1 text-xs text-[hsl(var(--foreground))/0.6] hover:text-neon hover:border-[hsl(var(--neon))/0.5] transition"
+            >
+              <X className="h-3 w-3" /> Clear
+            </button>
+          )}
+        </div>
+        {mode !== "all" && (
+          <p className="mt-2 text-center text-xs text-[hsl(var(--foreground))/0.55]">
+            {MODE_DESCRIPTION[mode]}
+          </p>
+        )}
 
         {/* Main grid */}
         <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 lg:grid-cols-2">
@@ -490,7 +565,7 @@ const Index = () => {
         <div className="panel p-5 mt-6">
           <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
             <h3 className="text-sm font-bold tracking-wider text-neon uppercase">
-              Forbidden Keywords ({keywordList.length})
+              {mode === "all" ? "Forbidden Keywords" : `${MODE_LABEL[mode]} Keywords`} ({keywordList.length})
             </h3>
             <button
               onClick={() => setEditorOpen(true)}
