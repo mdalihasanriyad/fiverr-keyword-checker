@@ -376,6 +376,44 @@ const Index = () => {
           </nav>
         </div>
 
+        {/* Mode switcher: preselected by landing page CTAs (?mode=). */}
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[hsl(var(--foreground))/0.55]">
+            <Filter className="h-3.5 w-3.5" /> Mode:
+          </span>
+          {(["all", "forbidden-words", "compliance", "gig-seo"] as const).map((m) => {
+            const active = mode === m;
+            return (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                aria-pressed={active}
+                className={
+                  active
+                    ? "rounded-full bg-[hsl(var(--neon))] text-black px-3 py-1 text-xs sm:text-sm font-semibold shadow-[0_0_18px_hsl(var(--neon)/0.45)]"
+                    : "rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon transition"
+                }
+              >
+                {MODE_LABEL[m]}
+              </button>
+            );
+          })}
+          {mode !== "all" && (
+            <button
+              onClick={() => setMode("all")}
+              aria-label="Clear mode filter"
+              className="inline-flex items-center gap-1 rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-2.5 py-1 text-xs text-[hsl(var(--foreground))/0.6] hover:text-neon hover:border-[hsl(var(--neon))/0.5] transition"
+            >
+              <X className="h-3 w-3" /> Clear
+            </button>
+          )}
+        </div>
+        {mode !== "all" && (
+          <p className="mt-2 text-center text-xs text-[hsl(var(--foreground))/0.55]">
+            {MODE_DESCRIPTION[mode]}
+          </p>
+        )}
+
         {/* Main grid */}
         <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 lg:grid-cols-2">
           {/* Input */}
