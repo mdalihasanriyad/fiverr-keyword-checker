@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { useSeo } from "@/lib/seo";
+import { trackCtaClick } from "@/lib/ctaTracking";
 
 const GigSeo = () => {
   useSeo({
@@ -38,10 +39,11 @@ const GigSeo = () => {
         </section>
 
         <Link
-          to="/?mode=gig-seo"
+          to="/?mode=gig-seo&cta=gig-seo&run=1"
+          onClick={() => trackCtaClick("gig-seo")}
           className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[hsl(var(--neon))] text-black font-bold px-5 py-3 hover:bg-[hsl(var(--neon-glow))] transition shadow-[0_0_30px_hsl(var(--neon)/0.4)]"
         >
-          Check my gig copy <ArrowRight className="h-4 w-4" />
+          Audit my gig SEO copy <ArrowRight className="h-4 w-4" />
         </Link>
       </main>
     </div>

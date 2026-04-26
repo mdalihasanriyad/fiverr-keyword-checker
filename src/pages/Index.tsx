@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 import { useSeo } from "@/lib/seo";
 import { type CheckerMode, MODE_KEYWORDS, MODE_LABEL, MODE_DESCRIPTION, isCheckerMode } from "@/lib/modes";
+import { recordCtaArrival } from "@/lib/ctaTracking";
 
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
@@ -429,6 +430,32 @@ const Index = () => {
       });
     }
   };
+
+  // Landing-page CTA arrival: record once per navigation, then auto-run if asked.
+  // The CTA URL looks like `/?mode=<m>&cta=<source>&run=1`. We track the arrival,
+  // optionally trigger a scan, and clean up the tracking params from the URL so
+  // refreshes don't re-fire.
+  const ctaHandledRef = useRef<string>("");
+  useEffect(() => {
+    const cta = searchParams.get("cta");
+    const run = searchParams.get("run");
+    if (!cta && !run) return;
+    const signature = `${cta ?? ""}|${run ?? ""}|${searchParams.get("mode") ?? ""}`;
+    if (ctaHandledRef.current === signature) return;
+    ctaHandledRef.current = signature;
+
+    recordCtaArrival(cta);
+
+    const params = new URLSearchParams(searchParams);
+    params.delete("cta");
+    params.delete("run");
+    setSearchParams(params, { replace: true });
+
+    if (run === "1") {
+      // Defer so refs and the just-announced mode toast settle first.
+      setTimeout(() => runMode(), 250);
+    }
+  }, [searchParams, setSearchParams, runMode]);
 
   const violations = detected.length;
   const clean = violations === 0;
