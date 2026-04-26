@@ -11,6 +11,7 @@ import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphena
 const STORAGE_KEY = "keyword-guard:keywords-v2";
 const TEXT_KEY = "keyword-guard:text-v1";
 const TEXTAREA_STATE_KEY = "keyword-guard:textarea-state-v1";
+const AUTO_RUN_KEY = "keyword-guard:auto-run-v1";
 
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
@@ -189,6 +190,22 @@ const Index = () => {
     } catch {}
   }, [hyphenStyle]);
 
+  // Auto-run: when enabled, every text edit triggers a scan + summary toast (debounced).
+  const [autoRun, setAutoRun] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem(AUTO_RUN_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(AUTO_RUN_KEY, autoRun ? "1" : "0");
+    } catch {}
+  }, [autoRun]);
+
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -247,6 +264,46 @@ const Index = () => {
     () => Array.from(new Set(detected.map((d) => d.keyword.toLowerCase()))),
     [detected],
   );
+
+  // Auto-run summary: when enabled, debounce-emit a toast reflecting the latest scan.
+  // Uses a signature so we don't re-toast for identical results (e.g. cursor-only edits).
+  const lastAutoSignatureRef = useRef<string>("");
+  const autoRunPrimedRef = useRef(false);
+  useEffect(() => {
+    if (!autoRun) {
+      lastAutoSignatureRef.current = "";
+      autoRunPrimedRef.current = false;
+      return;
+    }
+    // Skip the very first run after enabling so we don't toast on mount.
+    if (!autoRunPrimedRef.current) {
+      autoRunPrimedRef.current = true;
+      lastAutoSignatureRef.current = `${mode}|${text.length}|${uniqueDetected.join(",")}`;
+      return;
+    }
+    if (!text.trim()) {
+      lastAutoSignatureRef.current = `${mode}|0|`;
+      return;
+    }
+    const handle = setTimeout(() => {
+      const signature = `${mode}|${text.length}|${uniqueDetected.join(",")}`;
+      if (signature === lastAutoSignatureRef.current) return;
+      lastAutoSignatureRef.current = signature;
+      const label = MODE_LABEL[mode];
+      if (detected.length === 0) {
+        toast.success(`${label}: all clear`, {
+          description: "No flagged keywords found in your text.",
+          id: "auto-run-summary",
+        });
+      } else {
+        toast.warning(`${label}: ${detected.length} hit${detected.length > 1 ? "s" : ""}`, {
+          description: `${uniqueDetected.length} unique keyword${uniqueDetected.length > 1 ? "s" : ""} flagged.`,
+          id: "auto-run-summary",
+        });
+      }
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [autoRun, text, mode, detected.length, uniqueDetected]);
 
   const highlighted = useMemo(() => {
     if (detected.length === 0) return [{ type: "text" as const, value: text }];
@@ -443,6 +500,32 @@ const Index = () => {
           >
             <Play className="h-3.5 w-3.5" /> Run this mode
           </button>
+          <label
+            title="Automatically scan as you paste or edit text"
+            className={
+              autoRun
+                ? "inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.12] px-3 py-1 text-xs sm:text-sm font-semibold text-neon cursor-pointer transition"
+                : "inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon cursor-pointer transition"
+            }
+          >
+            <input
+              type="checkbox"
+              checked={autoRun}
+              onChange={(e) => {
+                const next = e.target.checked;
+                setAutoRun(next);
+                toast.info(next ? "Auto-run enabled" : "Auto-run disabled", {
+                  description: next
+                    ? "Your text will be scanned automatically as you type or paste."
+                    : "Use the Run this mode button to scan manually.",
+                  id: "auto-run-toggle",
+                });
+              }}
+              className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+              aria-label="Toggle auto-run on text changes"
+            />
+            Auto-run
+          </label>
         </div>
         {mode !== "all" && (
           <p className="mt-2 text-center text-xs text-[hsl(var(--foreground))/0.55]">
