@@ -265,6 +265,46 @@ const Index = () => {
     [detected],
   );
 
+  // Auto-run summary: when enabled, debounce-emit a toast reflecting the latest scan.
+  // Uses a signature so we don't re-toast for identical results (e.g. cursor-only edits).
+  const lastAutoSignatureRef = useRef<string>("");
+  const autoRunPrimedRef = useRef(false);
+  useEffect(() => {
+    if (!autoRun) {
+      lastAutoSignatureRef.current = "";
+      autoRunPrimedRef.current = false;
+      return;
+    }
+    // Skip the very first run after enabling so we don't toast on mount.
+    if (!autoRunPrimedRef.current) {
+      autoRunPrimedRef.current = true;
+      lastAutoSignatureRef.current = `${mode}|${text.length}|${uniqueDetected.join(",")}`;
+      return;
+    }
+    if (!text.trim()) {
+      lastAutoSignatureRef.current = `${mode}|0|`;
+      return;
+    }
+    const handle = setTimeout(() => {
+      const signature = `${mode}|${text.length}|${uniqueDetected.join(",")}`;
+      if (signature === lastAutoSignatureRef.current) return;
+      lastAutoSignatureRef.current = signature;
+      const label = MODE_LABEL[mode];
+      if (detected.length === 0) {
+        toast.success(`${label}: all clear`, {
+          description: "No flagged keywords found in your text.",
+          id: "auto-run-summary",
+        });
+      } else {
+        toast.warning(`${label}: ${detected.length} hit${detected.length > 1 ? "s" : ""}`, {
+          description: `${uniqueDetected.length} unique keyword${uniqueDetected.length > 1 ? "s" : ""} flagged.`,
+          id: "auto-run-summary",
+        });
+      }
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [autoRun, text, mode, detected.length, uniqueDetected]);
+
   const highlighted = useMemo(() => {
     if (detected.length === 0) return [{ type: "text" as const, value: text }];
     const parts: { type: "text" | "hit"; value: string }[] = [];
