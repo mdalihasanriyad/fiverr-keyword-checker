@@ -486,7 +486,7 @@ const Index = () => {
           </div>
 
           {/* Right column */}
-          <div className="flex flex-col gap-6">
+          <div ref={resultsRef} className="flex flex-col gap-6 scroll-mt-6">
             {/* Preview */}
             <div className="panel p-4">
               <div className="flex items-center justify-between mb-3">
