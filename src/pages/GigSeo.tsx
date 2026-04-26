@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { useSeo } from "@/lib/seo";
+import { trackCtaClick } from "@/lib/ctaTracking";
 
 const GigSeo = () => {
   useSeo({
