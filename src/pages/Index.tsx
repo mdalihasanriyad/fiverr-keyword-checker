@@ -190,6 +190,22 @@ const Index = () => {
     } catch {}
   }, [hyphenStyle]);
 
+  // Auto-run: when enabled, every text edit triggers a scan + summary toast (debounced).
+  const [autoRun, setAutoRun] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem(AUTO_RUN_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(AUTO_RUN_KEY, autoRun ? "1" : "0");
+    } catch {}
+  }, [autoRun]);
+
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
