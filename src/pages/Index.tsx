@@ -54,6 +54,7 @@ const Index = () => {
     }
   });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const restoredRef = useRef(false);
 
   // Helper: compute capped height based on viewport.
