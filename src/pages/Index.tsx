@@ -500,6 +500,32 @@ const Index = () => {
           >
             <Play className="h-3.5 w-3.5" /> Run this mode
           </button>
+          <label
+            title="Automatically scan as you paste or edit text"
+            className={
+              autoRun
+                ? "inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.12] px-3 py-1 text-xs sm:text-sm font-semibold text-neon cursor-pointer transition"
+                : "inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon cursor-pointer transition"
+            }
+          >
+            <input
+              type="checkbox"
+              checked={autoRun}
+              onChange={(e) => {
+                const next = e.target.checked;
+                setAutoRun(next);
+                toast.info(next ? "Auto-run enabled" : "Auto-run disabled", {
+                  description: next
+                    ? "Your text will be scanned automatically as you type or paste."
+                    : "Use the Run this mode button to scan manually.",
+                  id: "auto-run-toggle",
+                });
+              }}
+              className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+              aria-label="Toggle auto-run on text changes"
+            />
+            Auto-run
+          </label>
         </div>
         {mode !== "all" && (
           <p className="mt-2 text-center text-xs text-[hsl(var(--foreground))/0.55]">
