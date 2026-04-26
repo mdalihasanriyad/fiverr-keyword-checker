@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ShieldAlert, ArrowRight } from "lucide-react";
 import { useSeo } from "@/lib/seo";
+import { trackCtaClick } from "@/lib/ctaTracking";
 
 const ForbiddenWords = () => {
   useSeo({
