@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw, Filter, X } from "lucide-react";
+import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw, Filter, X, Play } from "lucide-react";
 import { toast } from "sonner";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 import { useSeo } from "@/lib/seo";
@@ -54,6 +54,7 @@ const Index = () => {
     }
   });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const restoredRef = useRef(false);
 
   // Helper: compute capped height based on viewport.
@@ -345,6 +346,33 @@ const Index = () => {
       description: "Text, height, and scroll position restored to defaults.",
     });
   };
+
+  // Triggered by the "Run this mode" button in the mode switcher.
+  // If the editor is empty, focus it so the user can paste. Otherwise scroll
+  // the results into view and surface a quick summary based on the active mode.
+  const runMode = () => {
+    const label = MODE_LABEL[mode];
+    if (!text.trim()) {
+      textareaRef.current?.focus();
+      textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      toast.info(`${label} ready`, {
+        description: "Paste your Fiverr text above to scan it now.",
+      });
+      return;
+    }
+    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (detected.length === 0) {
+      toast.success(`${label}: all clear`, {
+        description: "No flagged keywords found in your text for this mode.",
+      });
+    } else {
+      const u = uniqueDetected.length;
+      toast.warning(`${label}: ${detected.length} hit${detected.length > 1 ? "s" : ""}`, {
+        description: `${u} unique keyword${u > 1 ? "s" : ""} flagged. Review the results below.`,
+      });
+    }
+  };
+
   const violations = detected.length;
   const clean = violations === 0;
 
@@ -407,6 +435,14 @@ const Index = () => {
               <X className="h-3 w-3" /> Clear
             </button>
           )}
+          <button
+            onClick={runMode}
+            aria-label={`Run ${MODE_LABEL[mode]} check now`}
+            title="Scan your text using the current mode"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.12] px-3 py-1 text-xs sm:text-sm font-semibold text-neon hover:bg-[hsl(var(--neon))/0.2] transition shadow-[0_0_14px_hsl(var(--neon)/0.25)]"
+          >
+            <Play className="h-3.5 w-3.5" /> Run this mode
+          </button>
         </div>
         {mode !== "all" && (
           <p className="mt-2 text-center text-xs text-[hsl(var(--foreground))/0.55]">
@@ -450,7 +486,7 @@ const Index = () => {
           </div>
 
           {/* Right column */}
-          <div className="flex flex-col gap-6">
+          <div ref={resultsRef} className="flex flex-col gap-6 scroll-mt-6">
             {/* Preview */}
             <div className="panel p-4">
               <div className="flex items-center justify-between mb-3">
