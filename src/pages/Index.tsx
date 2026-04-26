@@ -346,6 +346,33 @@ const Index = () => {
       description: "Text, height, and scroll position restored to defaults.",
     });
   };
+
+  // Triggered by the "Run this mode" button in the mode switcher.
+  // If the editor is empty, focus it so the user can paste. Otherwise scroll
+  // the results into view and surface a quick summary based on the active mode.
+  const runMode = () => {
+    const label = MODE_LABEL[mode];
+    if (!text.trim()) {
+      textareaRef.current?.focus();
+      textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      toast.info(`${label} ready`, {
+        description: "Paste your Fiverr text above to scan it now.",
+      });
+      return;
+    }
+    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (detected.length === 0) {
+      toast.success(`${label}: all clear`, {
+        description: "No flagged keywords found in your text for this mode.",
+      });
+    } else {
+      const u = uniqueDetected.length;
+      toast.warning(`${label}: ${detected.length} hit${detected.length > 1 ? "s" : ""}`, {
+        description: `${u} unique keyword${u > 1 ? "s" : ""} flagged. Review the results below.`,
+      });
+    }
+  };
+
   const violations = detected.length;
   const clean = violations === 0;
 
