@@ -435,6 +435,14 @@ const Index = () => {
               <X className="h-3 w-3" /> Clear
             </button>
           )}
+          <button
+            onClick={runMode}
+            aria-label={`Run ${MODE_LABEL[mode]} check now`}
+            title="Scan your text using the current mode"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.12] px-3 py-1 text-xs sm:text-sm font-semibold text-neon hover:bg-[hsl(var(--neon))/0.2] transition shadow-[0_0_14px_hsl(var(--neon)/0.25)]"
+          >
+            <Play className="h-3.5 w-3.5" /> Run this mode
+          </button>
         </div>
         {mode !== "all" && (
           <p className="mt-2 text-center text-xs text-[hsl(var(--foreground))/0.55]">
