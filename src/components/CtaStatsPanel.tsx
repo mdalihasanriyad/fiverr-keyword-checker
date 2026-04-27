@@ -187,6 +187,10 @@ const CtaStatsPanel = () => {
           </table>
         </div>
       )}
+
+      <p className="mt-3 text-[11px] text-muted-foreground" aria-live="polite">
+        {formatCutoff(range)}
+      </p>
     </section>
   );
 };
