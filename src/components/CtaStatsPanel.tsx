@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, MousePointerClick, LogIn } from "lucide-react";
+import { BarChart3, MousePointerClick, LogIn, Pause, Play } from "lucide-react";
 import {
   readCtaStatsInRange,
   type CtaRange,
