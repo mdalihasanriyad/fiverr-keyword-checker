@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, MousePointerClick, LogIn } from "lucide-react";
+import { BarChart3, MousePointerClick, LogIn, Pause, Play } from "lucide-react";
 import {
   readCtaStatsInRange,
   type CtaRange,
@@ -66,17 +66,53 @@ const formatRelative = (iso?: string) => {
 const CtaStatsPanel = () => {
   const [range, setRange] = useState<CtaRange>("7d");
   const [stats, setStats] = useState<CtaStats>(() => readCtaStatsInRange("7d"));
+  const [paused, setPaused] = useState(false);
+  const [pausedAt, setPausedAt] = useState<string | null>(null);
+  const [pendingUpdates, setPendingUpdates] = useState(0);
 
   useEffect(() => {
+    // Always refresh on range change so the table reflects the new filter,
+    // even when paused (the user explicitly asked for a different view).
+    setStats(readCtaStatsInRange(range));
+    setPendingUpdates(0);
+  }, [range]);
+
+  useEffect(() => {
+    if (paused) {
+      // While paused, just count incoming events so the user knows new
+      // activity happened without disturbing the snapshot they're inspecting.
+      const bump = () => setPendingUpdates((n) => n + 1);
+      window.addEventListener("cta-click", bump);
+      window.addEventListener("storage", bump);
+      return () => {
+        window.removeEventListener("cta-click", bump);
+        window.removeEventListener("storage", bump);
+      };
+    }
+
     const refresh = () => setStats(readCtaStatsInRange(range));
-    refresh();
     window.addEventListener("cta-click", refresh);
     window.addEventListener("storage", refresh);
     return () => {
       window.removeEventListener("cta-click", refresh);
       window.removeEventListener("storage", refresh);
     };
-  }, [range]);
+  }, [range, paused]);
+
+  const togglePaused = () => {
+    setPaused((prev) => {
+      const next = !prev;
+      if (next) {
+        setPausedAt(new Date().toISOString());
+      } else {
+        // Resuming: refresh immediately and clear the pending counter.
+        setStats(readCtaStatsInRange(range));
+        setPendingUpdates(0);
+        setPausedAt(null);
+      }
+      return next;
+    });
+  };
 
   const entries = useMemo(
     () =>
@@ -129,6 +165,32 @@ const CtaStatsPanel = () => {
               );
             })}
           </div>
+          <button
+            type="button"
+            onClick={togglePaused}
+            aria-pressed={paused}
+            title={paused ? "Resume live updates" : "Pause live updates"}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-colors",
+              paused
+                ? "border-primary/60 bg-primary/10 text-primary hover:bg-primary/15"
+                : "border-[hsl(var(--panel-border))/0.5] bg-background/40 text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {paused ? (
+              <>
+                <Play className="h-3.5 w-3.5" aria-hidden />
+                <span>
+                  Resume{pendingUpdates > 0 ? ` (${pendingUpdates})` : ""}
+                </span>
+              </>
+            ) : (
+              <>
+                <Pause className="h-3.5 w-3.5" aria-hidden />
+                <span>Pause</span>
+              </>
+            )}
+          </button>
           <div className="text-xs text-muted-foreground">
             {totalClicks} clicks · {totalArrivals} arrivals
           </div>
@@ -188,9 +250,17 @@ const CtaStatsPanel = () => {
         </div>
       )}
 
-      <p className="mt-3 text-[11px] text-muted-foreground" aria-live="polite">
-        {formatCutoff(range)}
-      </p>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
+        <p aria-live="polite">{formatCutoff(range)}</p>
+        {paused && pausedAt && (
+          <p className="text-primary" aria-live="polite">
+            Paused at {CUTOFF_FORMATTER.format(new Date(pausedAt))}
+            {pendingUpdates > 0
+              ? ` · ${pendingUpdates} new event${pendingUpdates === 1 ? "" : "s"} waiting`
+              : ""}
+          </p>
+        )}
+      </div>
     </section>
   );
 };
