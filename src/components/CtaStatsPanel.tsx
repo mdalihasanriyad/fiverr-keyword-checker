@@ -250,9 +250,17 @@ const CtaStatsPanel = () => {
         </div>
       )}
 
-      <p className="mt-3 text-[11px] text-muted-foreground" aria-live="polite">
-        {formatCutoff(range)}
-      </p>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
+        <p aria-live="polite">{formatCutoff(range)}</p>
+        {paused && pausedAt && (
+          <p className="text-primary" aria-live="polite">
+            Paused at {CUTOFF_FORMATTER.format(new Date(pausedAt))}
+            {pendingUpdates > 0
+              ? ` · ${pendingUpdates} new event${pendingUpdates === 1 ? "" : "s"} waiting`
+              : ""}
+          </p>
+        )}
+      </div>
     </section>
   );
 };
