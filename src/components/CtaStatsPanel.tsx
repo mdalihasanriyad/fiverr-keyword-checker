@@ -29,6 +29,26 @@ const RANGE_DESCRIPTION: Record<CtaRange, string> = {
   all: "all time",
 };
 
+const RANGE_MS: Record<Exclude<CtaRange, "all">, number> = {
+  "24h": 24 * 60 * 60 * 1000,
+  "7d": 7 * 24 * 60 * 60 * 1000,
+  "30d": 30 * 24 * 60 * 60 * 1000,
+};
+
+const CUTOFF_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+const formatCutoff = (range: CtaRange) => {
+  if (range === "all") return "From the beginning of recorded activity";
+  const cutoff = new Date(Date.now() - RANGE_MS[range]);
+  return `From ${CUTOFF_FORMATTER.format(cutoff)}`;
+};
+
 const formatRelative = (iso?: string) => {
   if (!iso) return "—";
   const diff = Date.now() - new Date(iso).getTime();
@@ -167,6 +187,10 @@ const CtaStatsPanel = () => {
           </table>
         </div>
       )}
+
+      <p className="mt-3 text-[11px] text-muted-foreground" aria-live="polite">
+        {formatCutoff(range)}
+      </p>
     </section>
   );
 };
