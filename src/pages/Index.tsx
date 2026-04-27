@@ -744,7 +744,9 @@ const Index = () => {
           📌 Always review your content before posting on Fiverr
         </p>
 
-        <footer className="mt-8 border-t border-[hsl(var(--panel-border))/0.5] pt-5 pb-2">
+       <CtaStatsPanel />
+
+       <footer className="mt-8 border-t border-[hsl(var(--panel-border))/0.5] pt-5 pb-2">
           <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-1 px-4 text-center sm:flex-row sm:gap-2">
             <span className="text-xs sm:text-sm text-[hsl(var(--foreground))/0.55] leading-relaxed">
               Developed by
