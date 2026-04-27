@@ -6,6 +6,7 @@ import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 import { useSeo } from "@/lib/seo";
 import { type CheckerMode, MODE_KEYWORDS, MODE_LABEL, MODE_DESCRIPTION, isCheckerMode } from "@/lib/modes";
 import { recordCtaArrival } from "@/lib/ctaTracking";
+import CtaStatsPanel from "@/components/CtaStatsPanel";
 
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
