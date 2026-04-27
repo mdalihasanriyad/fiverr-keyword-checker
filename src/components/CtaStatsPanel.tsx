@@ -66,17 +66,53 @@ const formatRelative = (iso?: string) => {
 const CtaStatsPanel = () => {
   const [range, setRange] = useState<CtaRange>("7d");
   const [stats, setStats] = useState<CtaStats>(() => readCtaStatsInRange("7d"));
+  const [paused, setPaused] = useState(false);
+  const [pausedAt, setPausedAt] = useState<string | null>(null);
+  const [pendingUpdates, setPendingUpdates] = useState(0);
 
   useEffect(() => {
+    // Always refresh on range change so the table reflects the new filter,
+    // even when paused (the user explicitly asked for a different view).
+    setStats(readCtaStatsInRange(range));
+    setPendingUpdates(0);
+  }, [range]);
+
+  useEffect(() => {
+    if (paused) {
+      // While paused, just count incoming events so the user knows new
+      // activity happened without disturbing the snapshot they're inspecting.
+      const bump = () => setPendingUpdates((n) => n + 1);
+      window.addEventListener("cta-click", bump);
+      window.addEventListener("storage", bump);
+      return () => {
+        window.removeEventListener("cta-click", bump);
+        window.removeEventListener("storage", bump);
+      };
+    }
+
     const refresh = () => setStats(readCtaStatsInRange(range));
-    refresh();
     window.addEventListener("cta-click", refresh);
     window.addEventListener("storage", refresh);
     return () => {
       window.removeEventListener("cta-click", refresh);
       window.removeEventListener("storage", refresh);
     };
-  }, [range]);
+  }, [range, paused]);
+
+  const togglePaused = () => {
+    setPaused((prev) => {
+      const next = !prev;
+      if (next) {
+        setPausedAt(new Date().toISOString());
+      } else {
+        // Resuming: refresh immediately and clear the pending counter.
+        setStats(readCtaStatsInRange(range));
+        setPendingUpdates(0);
+        setPausedAt(null);
+      }
+      return next;
+    });
+  };
 
   const entries = useMemo(
     () =>
