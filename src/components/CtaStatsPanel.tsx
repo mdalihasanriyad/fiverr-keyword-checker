@@ -165,6 +165,32 @@ const CtaStatsPanel = () => {
               );
             })}
           </div>
+          <button
+            type="button"
+            onClick={togglePaused}
+            aria-pressed={paused}
+            title={paused ? "Resume live updates" : "Pause live updates"}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-colors",
+              paused
+                ? "border-primary/60 bg-primary/10 text-primary hover:bg-primary/15"
+                : "border-[hsl(var(--panel-border))/0.5] bg-background/40 text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {paused ? (
+              <>
+                <Play className="h-3.5 w-3.5" aria-hidden />
+                <span>
+                  Resume{pendingUpdates > 0 ? ` (${pendingUpdates})` : ""}
+                </span>
+              </>
+            ) : (
+              <>
+                <Pause className="h-3.5 w-3.5" aria-hidden />
+                <span>Pause</span>
+              </>
+            )}
+          </button>
           <div className="text-xs text-muted-foreground">
             {totalClicks} clicks · {totalArrivals} arrivals
           </div>
