@@ -7,6 +7,7 @@ import { useSeo } from "@/lib/seo";
 import { type CheckerMode, MODE_KEYWORDS, MODE_LABEL, MODE_DESCRIPTION, isCheckerMode } from "@/lib/modes";
 import { recordCtaArrival } from "@/lib/ctaTracking";
 import CtaStatsPanel from "@/components/CtaStatsPanel";
+import TranslatorPanel from "@/components/TranslatorPanel";
 
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
@@ -486,9 +487,9 @@ const Index = () => {
             <Link to="/gig-seo" className="rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon transition">
               Gig SEO
             </Link>
-            <Link to="/translator?cta=home-nav" className="rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.08] px-3 py-1 text-xs sm:text-sm text-neon hover:bg-[hsl(var(--neon))/0.15] transition">
+            <a href="#translator" className="rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.08] px-3 py-1 text-xs sm:text-sm text-neon hover:bg-[hsl(var(--neon))/0.15] transition">
               Bangla Translator
-            </Link>
+            </a>
           </nav>
         </div>
 
@@ -741,6 +742,10 @@ const Index = () => {
               );
             })}
           </div>
+        </div>
+
+        <div id="translator" className="scroll-mt-6">
+          <TranslatorPanel />
         </div>
 
         <p className="text-center text-sm text-[hsl(var(--foreground))/0.5] mt-10">
