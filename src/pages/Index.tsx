@@ -486,9 +486,9 @@ const Index = () => {
             <Link to="/gig-seo" className="rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon transition">
               Gig SEO
             </Link>
-            <Link to="/translator?cta=home-nav" className="rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.08] px-3 py-1 text-xs sm:text-sm text-neon hover:bg-[hsl(var(--neon))/0.15] transition">
+            <a href="#translator" className="rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.08] px-3 py-1 text-xs sm:text-sm text-neon hover:bg-[hsl(var(--neon))/0.15] transition">
               Bangla Translator
-            </Link>
+            </a>
           </nav>
         </div>
 
