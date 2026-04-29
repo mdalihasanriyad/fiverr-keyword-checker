@@ -748,10 +748,6 @@ const Index = () => {
           </div>
         </div>
 
-        <div id="translator" className="scroll-mt-6">
-          <TranslatorPanel />
-        </div>
-
         <p className="text-center text-sm text-[hsl(var(--foreground))/0.5] mt-10">
           📌 Always review your content before posting on Fiverr
         </p>
