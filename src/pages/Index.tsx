@@ -7,7 +7,7 @@ import { useSeo } from "@/lib/seo";
 import { type CheckerMode, MODE_KEYWORDS, MODE_LABEL, MODE_DESCRIPTION, isCheckerMode } from "@/lib/modes";
 import { recordCtaArrival } from "@/lib/ctaTracking";
 import CtaStatsPanel from "@/components/CtaStatsPanel";
-import TranslatorPanel from "@/components/TranslatorPanel";
+import InlineTranslator from "@/components/InlineTranslator";
 
 import { hyphenateWith, HYPHEN_STYLE_KEY, type HyphenStyle } from "@/lib/hyphenate";
 
@@ -565,8 +565,8 @@ const Index = () => {
           </p>
         )}
 
-        {/* Main grid */}
-        <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 lg:grid-cols-2">
+        {/* Main grid: input | results | translation */}
+        <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 lg:grid-cols-3">
           {/* Input */}
           <div className="panel glow-neon relative flex flex-col overflow-hidden">
             <textarea
@@ -600,10 +600,9 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Right column */}
-          <div ref={resultsRef} className="flex flex-col gap-6 scroll-mt-6">
-            {/* Preview */}
-            <div className="panel p-4">
+          {/* Middle: Preview with highlights */}
+          <div ref={resultsRef} className="flex flex-col scroll-mt-6">
+            <div className="panel p-4 flex flex-col flex-1">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-bold tracking-wider text-neon uppercase">Preview with Highlights</h3>
                 <div className="flex gap-2">
@@ -621,7 +620,7 @@ const Index = () => {
                   </button>
                 </div>
               </div>
-              <div className="whitespace-pre-wrap leading-relaxed text-[hsl(var(--foreground))/0.95] min-h-[120px]">
+              <div className="whitespace-pre-wrap leading-relaxed text-[hsl(var(--foreground))/0.95] min-h-[120px] flex-1">
                 {highlighted.map((p, i) =>
                   p.type === "hit" ? (
                     <span
@@ -636,21 +635,30 @@ const Index = () => {
                 )}
               </div>
             </div>
+          </div>
 
-            {/* Status */}
-            {clean ? (
-              <div className="panel p-6 border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.06]">
-                <div className="flex flex-col items-center text-center gap-2">
-                  <div className="rounded-full bg-[hsl(var(--neon))/0.15] p-3">
-                    <CheckCircle2 className="h-7 w-7 text-neon" />
-                  </div>
-                  <div className="text-xl font-bold text-neon">All Clear</div>
-                  <div className="text-sm text-[hsl(var(--foreground))/0.7]">
-                    No forbidden keywords detected. Safe to post!
-                  </div>
+          {/* Right: Translation */}
+          <div id="translator" className="flex flex-col scroll-mt-6">
+            <InlineTranslator source={text} />
+          </div>
+        </div>
+
+        {/* Status + detected (full width below grid) */}
+        <div className="mt-4 sm:mt-6 grid gap-4 sm:gap-6 lg:grid-cols-2">
+          {clean ? (
+            <div className="panel p-6 border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.06] lg:col-span-2">
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className="rounded-full bg-[hsl(var(--neon))/0.15] p-3">
+                  <CheckCircle2 className="h-7 w-7 text-neon" />
+                </div>
+                <div className="text-xl font-bold text-neon">All Clear</div>
+                <div className="text-sm text-[hsl(var(--foreground))/0.7]">
+                  No forbidden keywords detected. Safe to post!
                 </div>
               </div>
-            ) : (
+            </div>
+          ) : (
+            <>
               <div className="rounded-xl p-6 border border-[hsl(var(--danger))/0.5] bg-[hsl(var(--danger-bg))]">
                 <div className="flex flex-col items-center text-center gap-2">
                   <div className="rounded-full bg-[hsl(var(--danger))/0.2] p-3">
@@ -664,10 +672,6 @@ const Index = () => {
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* Detected keywords */}
-            {!clean && (
               <div className="panel p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <AlertTriangle className="h-4 w-4 text-[hsl(var(--danger))]" />
@@ -697,8 +701,8 @@ const Index = () => {
                   ))}
                 </div>
               </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
 
         {/* Rewrite button */}
@@ -742,10 +746,6 @@ const Index = () => {
               );
             })}
           </div>
-        </div>
-
-        <div id="translator" className="scroll-mt-6">
-          <TranslatorPanel />
         </div>
 
         <p className="text-center text-sm text-[hsl(var(--foreground))/0.5] mt-10">
