@@ -237,8 +237,8 @@ const CtaStatsPanel = () => {
                     <td className="py-2 pr-3 font-medium">
                       {SOURCE_LABEL[source] ?? source}
                     </td>
-                    <td className="py-2 px-3 tabular-nums">{v.clicks}</td>
-                    <td className="py-2 px-3 tabular-nums">{v.arrivals}</td>
+                    <td className="py-2 px-3 tabular-nums text-neon">{v.clicks}</td>
+                    <td className="py-2 px-3 tabular-nums text-neon">{v.arrivals}</td>
                     <td className="py-2 pl-3 text-muted-foreground">
                       {formatRelative(last)}
                     </td>
