@@ -316,8 +316,12 @@ const CtaStatsPanel = () => {
                     <td className="py-2 pr-3 font-medium">
                       {SOURCE_LABEL[source] ?? source}
                     </td>
-                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>{v.clicks}</td>
-                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>{v.arrivals}</td>
+                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>
+                      <AnimatedNumber value={v.clicks} />
+                    </td>
+                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>
+                      <AnimatedNumber value={v.arrivals} />
+                    </td>
                     <td className="py-2 pl-3 text-muted-foreground">
                       {formatRelative(last)}
                     </td>
