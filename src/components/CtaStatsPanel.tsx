@@ -63,12 +63,56 @@ const formatRelative = (iso?: string) => {
   return `${d}d ago`;
 };
 
+const THEME_KEY = "cta-stats:theme-v1";
+type PanelTheme = "neon" | "neutral";
+
 const CtaStatsPanel = () => {
   const [range, setRange] = useState<CtaRange>("7d");
   const [stats, setStats] = useState<CtaStats>(() => readCtaStatsInRange("7d"));
   const [paused, setPaused] = useState(false);
   const [pausedAt, setPausedAt] = useState<string | null>(null);
   const [pendingUpdates, setPendingUpdates] = useState(0);
+  const [theme, setTheme] = useState<PanelTheme>(() => {
+    if (typeof window === "undefined") return "neon";
+    return (localStorage.getItem(THEME_KEY) as PanelTheme) || "neon";
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch {
+      // ignore
+    }
+  }, [theme]);
+
+  const isNeon = theme === "neon";
+  const t = {
+    section: isNeon
+      ? "border-[hsl(var(--panel-border)/0.5)] bg-card/60 shadow-[0_0_0_1px_hsl(var(--neon)/0.08),0_8px_30px_-12px_hsl(var(--neon)/0.25)]"
+      : "border-border bg-background/40",
+    icon: isNeon ? "text-neon" : "text-foreground",
+    title: isNeon ? "text-neon" : "text-foreground",
+    rangeWrap: isNeon
+      ? "border-[hsl(var(--panel-border)/0.6)] bg-background/60"
+      : "border-border bg-background/60",
+    rangeActive: isNeon
+      ? "bg-[hsl(var(--neon)/0.18)] text-neon shadow-[inset_0_0_0_1px_hsl(var(--neon)/0.5)]"
+      : "bg-muted text-foreground shadow-[inset_0_0_0_1px_hsl(var(--border))]",
+    pausedBtn: isNeon
+      ? "border-[hsl(var(--neon)/0.6)] bg-[hsl(var(--neon)/0.12)] text-neon hover:bg-[hsl(var(--neon)/0.2)]"
+      : "border-border bg-muted text-foreground hover:bg-muted/80",
+    headDivider: isNeon
+      ? "border-[hsl(var(--panel-border)/0.5)]"
+      : "border-border",
+    rowDivider: isNeon
+      ? "border-[hsl(var(--panel-border)/0.25)]"
+      : "border-border/60",
+    rowHover: isNeon
+      ? "hover:bg-[hsl(var(--neon)/0.04)]"
+      : "hover:bg-muted/50",
+    metric: isNeon ? "text-neon" : "text-foreground",
+  };
+
 
   useEffect(() => {
     // Always refresh on range change so the table reflects the new filter,
