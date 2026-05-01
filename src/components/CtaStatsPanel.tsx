@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, MousePointerClick, LogIn, Pause, Play } from "lucide-react";
+import { BarChart3, MousePointerClick, LogIn, Pause, Play, Palette } from "lucide-react";
 import {
   readCtaStatsInRange,
   type CtaRange,
@@ -63,12 +63,56 @@ const formatRelative = (iso?: string) => {
   return `${d}d ago`;
 };
 
+const THEME_KEY = "cta-stats:theme-v1";
+type PanelTheme = "neon" | "neutral";
+
 const CtaStatsPanel = () => {
   const [range, setRange] = useState<CtaRange>("7d");
   const [stats, setStats] = useState<CtaStats>(() => readCtaStatsInRange("7d"));
   const [paused, setPaused] = useState(false);
   const [pausedAt, setPausedAt] = useState<string | null>(null);
   const [pendingUpdates, setPendingUpdates] = useState(0);
+  const [theme, setTheme] = useState<PanelTheme>(() => {
+    if (typeof window === "undefined") return "neon";
+    return (localStorage.getItem(THEME_KEY) as PanelTheme) || "neon";
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch {
+      // ignore
+    }
+  }, [theme]);
+
+  const isNeon = theme === "neon";
+  const t = {
+    section: isNeon
+      ? "border-[hsl(var(--panel-border)/0.5)] bg-card/60 shadow-[0_0_0_1px_hsl(var(--neon)/0.08),0_8px_30px_-12px_hsl(var(--neon)/0.25)]"
+      : "border-border bg-background/40",
+    icon: isNeon ? "text-neon" : "text-foreground",
+    title: isNeon ? "text-neon" : "text-foreground",
+    rangeWrap: isNeon
+      ? "border-[hsl(var(--panel-border)/0.6)] bg-background/60"
+      : "border-border bg-background/60",
+    rangeActive: isNeon
+      ? "bg-[hsl(var(--neon)/0.18)] text-neon shadow-[inset_0_0_0_1px_hsl(var(--neon)/0.5)]"
+      : "bg-muted text-foreground shadow-[inset_0_0_0_1px_hsl(var(--border))]",
+    pausedBtn: isNeon
+      ? "border-[hsl(var(--neon)/0.6)] bg-[hsl(var(--neon)/0.12)] text-neon hover:bg-[hsl(var(--neon)/0.2)]"
+      : "border-border bg-muted text-foreground hover:bg-muted/80",
+    headDivider: isNeon
+      ? "border-[hsl(var(--panel-border)/0.5)]"
+      : "border-border",
+    rowDivider: isNeon
+      ? "border-[hsl(var(--panel-border)/0.25)]"
+      : "border-border/60",
+    rowHover: isNeon
+      ? "hover:bg-[hsl(var(--neon)/0.04)]"
+      : "hover:bg-muted/50",
+    metric: isNeon ? "text-neon" : "text-foreground",
+  };
+
 
   useEffect(() => {
     // Always refresh on range change so the table reflects the new filter,
@@ -128,12 +172,12 @@ const CtaStatsPanel = () => {
   return (
     <section
       aria-label="Landing CTA performance"
-      className="mt-6 rounded-lg border border-[hsl(var(--panel-border)/0.5)] bg-card/60 p-4 sm:p-5 shadow-[0_0_0_1px_hsl(var(--neon)/0.08),0_8px_30px_-12px_hsl(var(--neon)/0.25)]"
+      className={cn("mt-6 rounded-lg border p-4 sm:p-5", t.section)}
     >
       <header className="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div className="flex items-center gap-2">
-          <BarChart3 className="h-4 w-4 text-neon" aria-hidden />
-          <h2 className="text-sm font-semibold tracking-tight text-neon">
+          <BarChart3 className={cn("h-4 w-4", t.icon)} aria-hidden />
+          <h2 className={cn("text-sm font-semibold tracking-tight", t.title)}>
             Landing CTA performance
           </h2>
         </div>
@@ -142,7 +186,7 @@ const CtaStatsPanel = () => {
           <div
             role="radiogroup"
             aria-label="Time range"
-            className="inline-flex items-center rounded-md border border-[hsl(var(--panel-border)/0.6)] bg-background/60 p-0.5"
+            className={cn("inline-flex items-center rounded-md border p-0.5", t.rangeWrap)}
           >
             {RANGES.map((r) => {
               const active = r.value === range;
@@ -156,7 +200,7 @@ const CtaStatsPanel = () => {
                   className={cn(
                     "px-2.5 py-1 text-xs rounded-sm transition-colors",
                     active
-                      ? "bg-[hsl(var(--neon)/0.18)] text-neon shadow-[inset_0_0_0_1px_hsl(var(--neon)/0.5)]"
+                      ? t.rangeActive
                       : "text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -173,8 +217,8 @@ const CtaStatsPanel = () => {
             className={cn(
               "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-colors",
               paused
-                ? "border-[hsl(var(--neon)/0.6)] bg-[hsl(var(--neon)/0.12)] text-neon hover:bg-[hsl(var(--neon)/0.2)]"
-                : "border-[hsl(var(--panel-border)/0.6)] bg-background/60 text-muted-foreground hover:text-foreground",
+                ? t.pausedBtn
+                : cn(t.rangeWrap, "text-muted-foreground hover:text-foreground"),
             )}
           >
             {paused ? (
@@ -191,6 +235,20 @@ const CtaStatsPanel = () => {
               </>
             )}
           </button>
+          <button
+            type="button"
+            onClick={() => setTheme(isNeon ? "neutral" : "neon")}
+            aria-pressed={!isNeon}
+            title={isNeon ? "Switch to neutral theme" : "Switch to neon theme"}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-colors",
+              t.rangeWrap,
+              "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <Palette className="h-3.5 w-3.5" aria-hidden />
+            <span>{isNeon ? "Neutral" : "Neon"}</span>
+          </button>
           <div className="text-xs text-muted-foreground">
             {totalClicks} clicks · {totalArrivals} arrivals
           </div>
@@ -206,7 +264,7 @@ const CtaStatsPanel = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-xs sm:text-sm">
             <thead>
-              <tr className="text-left text-muted-foreground border-b border-[hsl(var(--panel-border)/0.5)]">
+              <tr className={cn("text-left text-muted-foreground border-b", t.headDivider)}>
                 <th className="py-2 pr-3 font-medium">Source</th>
                 <th className="py-2 px-3 font-medium">
                   <span className="inline-flex items-center gap-1">
@@ -232,13 +290,13 @@ const CtaStatsPanel = () => {
                 return (
                   <tr
                     key={source}
-                    className="border-b border-[hsl(var(--panel-border)/0.25)] last:border-0 hover:bg-[hsl(var(--neon)/0.04)] transition-colors"
+                    className={cn("border-b last:border-0 transition-colors", t.rowDivider, t.rowHover)}
                   >
                     <td className="py-2 pr-3 font-medium">
                       {SOURCE_LABEL[source] ?? source}
                     </td>
-                    <td className="py-2 px-3 tabular-nums text-neon">{v.clicks}</td>
-                    <td className="py-2 px-3 tabular-nums text-neon">{v.arrivals}</td>
+                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>{v.clicks}</td>
+                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>{v.arrivals}</td>
                     <td className="py-2 pl-3 text-muted-foreground">
                       {formatRelative(last)}
                     </td>
