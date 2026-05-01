@@ -172,12 +172,12 @@ const CtaStatsPanel = () => {
   return (
     <section
       aria-label="Landing CTA performance"
-      className="mt-6 rounded-lg border border-[hsl(var(--panel-border)/0.5)] bg-card/60 p-4 sm:p-5 shadow-[0_0_0_1px_hsl(var(--neon)/0.08),0_8px_30px_-12px_hsl(var(--neon)/0.25)]"
+      className={cn("mt-6 rounded-lg border p-4 sm:p-5", t.section)}
     >
       <header className="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div className="flex items-center gap-2">
-          <BarChart3 className="h-4 w-4 text-neon" aria-hidden />
-          <h2 className="text-sm font-semibold tracking-tight text-neon">
+          <BarChart3 className={cn("h-4 w-4", t.icon)} aria-hidden />
+          <h2 className={cn("text-sm font-semibold tracking-tight", t.title)}>
             Landing CTA performance
           </h2>
         </div>
@@ -186,7 +186,7 @@ const CtaStatsPanel = () => {
           <div
             role="radiogroup"
             aria-label="Time range"
-            className="inline-flex items-center rounded-md border border-[hsl(var(--panel-border)/0.6)] bg-background/60 p-0.5"
+            className={cn("inline-flex items-center rounded-md border p-0.5", t.rangeWrap)}
           >
             {RANGES.map((r) => {
               const active = r.value === range;
@@ -200,7 +200,7 @@ const CtaStatsPanel = () => {
                   className={cn(
                     "px-2.5 py-1 text-xs rounded-sm transition-colors",
                     active
-                      ? "bg-[hsl(var(--neon)/0.18)] text-neon shadow-[inset_0_0_0_1px_hsl(var(--neon)/0.5)]"
+                      ? t.rangeActive
                       : "text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -217,8 +217,8 @@ const CtaStatsPanel = () => {
             className={cn(
               "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-colors",
               paused
-                ? "border-[hsl(var(--neon)/0.6)] bg-[hsl(var(--neon)/0.12)] text-neon hover:bg-[hsl(var(--neon)/0.2)]"
-                : "border-[hsl(var(--panel-border)/0.6)] bg-background/60 text-muted-foreground hover:text-foreground",
+                ? t.pausedBtn
+                : cn(t.rangeWrap, "text-muted-foreground hover:text-foreground"),
             )}
           >
             {paused ? (
@@ -234,6 +234,20 @@ const CtaStatsPanel = () => {
                 <span>Pause</span>
               </>
             )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setTheme(isNeon ? "neutral" : "neon")}
+            aria-pressed={!isNeon}
+            title={isNeon ? "Switch to neutral theme" : "Switch to neon theme"}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-colors",
+              t.rangeWrap,
+              "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <Palette className="h-3.5 w-3.5" aria-hidden />
+            <span>{isNeon ? "Neutral" : "Neon"}</span>
           </button>
           <div className="text-xs text-muted-foreground">
             {totalClicks} clicks · {totalArrivals} arrivals
