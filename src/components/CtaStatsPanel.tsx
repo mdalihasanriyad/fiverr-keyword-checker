@@ -264,7 +264,7 @@ const CtaStatsPanel = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-xs sm:text-sm">
             <thead>
-              <tr className="text-left text-muted-foreground border-b border-[hsl(var(--panel-border)/0.5)]">
+              <tr className={cn("text-left text-muted-foreground border-b", t.headDivider)}>
                 <th className="py-2 pr-3 font-medium">Source</th>
                 <th className="py-2 px-3 font-medium">
                   <span className="inline-flex items-center gap-1">
@@ -290,13 +290,13 @@ const CtaStatsPanel = () => {
                 return (
                   <tr
                     key={source}
-                    className="border-b border-[hsl(var(--panel-border)/0.25)] last:border-0 hover:bg-[hsl(var(--neon)/0.04)] transition-colors"
+                    className={cn("border-b last:border-0 transition-colors", t.rowDivider, t.rowHover)}
                   >
                     <td className="py-2 pr-3 font-medium">
                       {SOURCE_LABEL[source] ?? source}
                     </td>
-                    <td className="py-2 px-3 tabular-nums text-neon">{v.clicks}</td>
-                    <td className="py-2 px-3 tabular-nums text-neon">{v.arrivals}</td>
+                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>{v.clicks}</td>
+                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>{v.arrivals}</td>
                     <td className="py-2 pl-3 text-muted-foreground">
                       {formatRelative(last)}
                     </td>
