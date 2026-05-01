@@ -66,6 +66,27 @@ const formatRelative = (iso?: string) => {
 const THEME_KEY = "cta-stats:theme-v1";
 type PanelTheme = "neon" | "neutral";
 
+// Renders a number that briefly pops + flashes whenever the value changes.
+const AnimatedNumber = ({ value, className }: { value: number; className?: string }) => {
+  const [animKey, setAnimKey] = useState(0);
+  const prev = useRef(value);
+  useEffect(() => {
+    if (prev.current !== value) {
+      prev.current = value;
+      setAnimKey((k) => k + 1);
+    }
+  }, [value]);
+  return (
+    <span
+      key={animKey}
+      className={cn("inline-block origin-center will-change-transform", animKey > 0 && "animate-value-pop", className)}
+    >
+      {value}
+    </span>
+  );
+};
+
+
 const CtaStatsPanel = () => {
   const [range, setRange] = useState<CtaRange>("7d");
   const [stats, setStats] = useState<CtaStats>(() => readCtaStatsInRange("7d"));
