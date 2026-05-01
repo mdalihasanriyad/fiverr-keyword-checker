@@ -464,7 +464,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground px-4 py-10 sm:py-14">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto w-full max-w-[1500px]">
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-4">
           <span className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.08] px-4 py-1.5 text-sm text-neon">
