@@ -128,12 +128,12 @@ const CtaStatsPanel = () => {
   return (
     <section
       aria-label="Landing CTA performance"
-      className="mt-6 rounded-lg border border-[hsl(var(--panel-border))/0.5] bg-card/40 p-4 sm:p-5"
+      className="mt-6 rounded-lg border border-[hsl(var(--panel-border)/0.5)] bg-card/60 p-4 sm:p-5 shadow-[0_0_0_1px_hsl(var(--neon)/0.08),0_8px_30px_-12px_hsl(var(--neon)/0.25)]"
     >
       <header className="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div className="flex items-center gap-2">
           <BarChart3 className="h-4 w-4 text-neon" aria-hidden />
-          <h2 className="text-sm font-semibold tracking-tight">
+          <h2 className="text-sm font-semibold tracking-tight text-neon">
             Landing CTA performance
           </h2>
         </div>
@@ -142,7 +142,7 @@ const CtaStatsPanel = () => {
           <div
             role="radiogroup"
             aria-label="Time range"
-            className="inline-flex items-center rounded-md border border-[hsl(var(--panel-border))/0.5] bg-background/40 p-0.5"
+            className="inline-flex items-center rounded-md border border-[hsl(var(--panel-border)/0.6)] bg-background/60 p-0.5"
           >
             {RANGES.map((r) => {
               const active = r.value === range;
@@ -156,7 +156,7 @@ const CtaStatsPanel = () => {
                   className={cn(
                     "px-2.5 py-1 text-xs rounded-sm transition-colors",
                     active
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-[hsl(var(--neon)/0.18)] text-neon shadow-[inset_0_0_0_1px_hsl(var(--neon)/0.5)]"
                       : "text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -173,8 +173,8 @@ const CtaStatsPanel = () => {
             className={cn(
               "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-colors",
               paused
-                ? "border-primary/60 bg-primary/10 text-primary hover:bg-primary/15"
-                : "border-[hsl(var(--panel-border))/0.5] bg-background/40 text-muted-foreground hover:text-foreground",
+                ? "border-[hsl(var(--neon)/0.6)] bg-[hsl(var(--neon)/0.12)] text-neon hover:bg-[hsl(var(--neon)/0.2)]"
+                : "border-[hsl(var(--panel-border)/0.6)] bg-background/60 text-muted-foreground hover:text-foreground",
             )}
           >
             {paused ? (
@@ -206,7 +206,7 @@ const CtaStatsPanel = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-xs sm:text-sm">
             <thead>
-              <tr className="text-left text-muted-foreground border-b border-[hsl(var(--panel-border))/0.4]">
+              <tr className="text-left text-muted-foreground border-b border-[hsl(var(--panel-border)/0.5)]">
                 <th className="py-2 pr-3 font-medium">Source</th>
                 <th className="py-2 px-3 font-medium">
                   <span className="inline-flex items-center gap-1">
@@ -232,13 +232,13 @@ const CtaStatsPanel = () => {
                 return (
                   <tr
                     key={source}
-                    className="border-b border-[hsl(var(--panel-border))/0.2] last:border-0"
+                    className="border-b border-[hsl(var(--panel-border)/0.25)] last:border-0 hover:bg-[hsl(var(--neon)/0.04)] transition-colors"
                   >
                     <td className="py-2 pr-3 font-medium">
                       {SOURCE_LABEL[source] ?? source}
                     </td>
-                    <td className="py-2 px-3 tabular-nums">{v.clicks}</td>
-                    <td className="py-2 px-3 tabular-nums">{v.arrivals}</td>
+                    <td className="py-2 px-3 tabular-nums text-neon">{v.clicks}</td>
+                    <td className="py-2 px-3 tabular-nums text-neon">{v.arrivals}</td>
                     <td className="py-2 pl-3 text-muted-foreground">
                       {formatRelative(last)}
                     </td>
