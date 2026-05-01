@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BarChart3, MousePointerClick, LogIn, Pause, Play, Palette } from "lucide-react";
 import {
   readCtaStatsInRange,
@@ -65,6 +65,27 @@ const formatRelative = (iso?: string) => {
 
 const THEME_KEY = "cta-stats:theme-v1";
 type PanelTheme = "neon" | "neutral";
+
+// Renders a number that briefly pops + flashes whenever the value changes.
+const AnimatedNumber = ({ value, className }: { value: number; className?: string }) => {
+  const [animKey, setAnimKey] = useState(0);
+  const prev = useRef(value);
+  useEffect(() => {
+    if (prev.current !== value) {
+      prev.current = value;
+      setAnimKey((k) => k + 1);
+    }
+  }, [value]);
+  return (
+    <span
+      key={animKey}
+      className={cn("inline-block origin-center will-change-transform", animKey > 0 && "animate-value-pop", className)}
+    >
+      {value}
+    </span>
+  );
+};
+
 
 const CtaStatsPanel = () => {
   const [range, setRange] = useState<CtaRange>("7d");
@@ -295,8 +316,12 @@ const CtaStatsPanel = () => {
                     <td className="py-2 pr-3 font-medium">
                       {SOURCE_LABEL[source] ?? source}
                     </td>
-                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>{v.clicks}</td>
-                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>{v.arrivals}</td>
+                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>
+                      <AnimatedNumber value={v.clicks} />
+                    </td>
+                    <td className={cn("py-2 px-3 tabular-nums", t.metric)}>
+                      <AnimatedNumber value={v.arrivals} />
+                    </td>
                     <td className="py-2 pl-3 text-muted-foreground">
                       {formatRelative(last)}
                     </td>
