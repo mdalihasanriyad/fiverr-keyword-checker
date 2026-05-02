@@ -1,17 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <style>
     .f {
-      fill: none;
-      stroke: #22c55e;
-      stroke-width: 10;
-      stroke-linecap: round;
-      stroke-dasharray: 200;
-      stroke-dashoffset: 200;
-      animation: draw 2s infinite alternate;
+      fill: black;
+      animation: pulse 1.5s infinite;
+      transform-origin: center;
     }
-    @keyframes draw {
-      to { stroke-dashoffset: 0; }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.6; }
+      100% { transform: scale(1); opacity: 1; }
     }
   </style>
-  <path class="f" d="M30 10 L30 90 M30 10 L70 10 M30 50 L60 50"/>
+  <text x="50" y="65" font-size="60" text-anchor="middle" class="f">F</text>
 </svg>
