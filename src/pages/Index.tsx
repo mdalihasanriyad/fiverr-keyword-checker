@@ -167,6 +167,7 @@ const Index = () => {
   }, [text]);
 
   const [editorOpen, setEditorOpen] = useState(false);
+  const [previewExpanded, setPreviewExpanded] = useState(false);
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
     try {
