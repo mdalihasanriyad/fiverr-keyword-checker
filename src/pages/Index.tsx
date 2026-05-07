@@ -570,7 +570,7 @@ const Index = () => {
         )}
 
         {/* Main grid: input | results | translation */}
-        <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 lg:grid-cols-3">
+        <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Input */}
           <div className="panel glow-neon relative flex flex-col overflow-hidden">
             <textarea
