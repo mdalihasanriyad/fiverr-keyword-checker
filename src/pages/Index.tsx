@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw, Filter, X, Play } from "lucide-react";
+import {
+  AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw, Filter, X, Play, ChevronDown,
+} from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import KeywordEditor, { type KeywordMap } from "@/components/KeywordEditor";
 import { useSeo } from "@/lib/seo";
 import { type CheckerMode, MODE_KEYWORDS, MODE_LABEL, MODE_DESCRIPTION, isCheckerMode } from "@/lib/modes";
