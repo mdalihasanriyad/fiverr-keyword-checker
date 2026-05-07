@@ -494,70 +494,74 @@ const Index = () => {
         </div>
 
         {/* Mode switcher: preselected by landing page CTAs (?mode=). */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-          <span className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[hsl(var(--foreground))/0.55]">
-            <Filter className="h-3.5 w-3.5" /> Mode:
-          </span>
-          {(["all", "forbidden-words", "compliance", "gig-seo"] as const).map((m) => {
-            const active = mode === m;
-            return (
+        <div className="mt-6 flex flex-col items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <span className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[hsl(var(--foreground))/0.55]">
+              <Filter className="h-3.5 w-3.5" /> Mode:
+            </span>
+            {(["all", "forbidden-words", "compliance", "gig-seo"] as const).map((m) => {
+              const active = mode === m;
+              return (
+                <button
+                  key={m}
+                  onClick={() => setMode(m)}
+                  aria-pressed={active}
+                  className={
+                    active
+                      ? "rounded-full bg-[hsl(var(--neon))] text-black px-3 py-1 text-xs sm:text-sm font-semibold shadow-[0_0_18px_hsl(var(--neon)/0.45)]"
+                      : "rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon transition"
+                  }
+                >
+                  {MODE_LABEL[m]}
+                </button>
+              );
+            })}
+            {mode !== "all" && (
               <button
-                key={m}
-                onClick={() => setMode(m)}
-                aria-pressed={active}
-                className={
-                  active
-                    ? "rounded-full bg-[hsl(var(--neon))] text-black px-3 py-1 text-xs sm:text-sm font-semibold shadow-[0_0_18px_hsl(var(--neon)/0.45)]"
-                    : "rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon transition"
-                }
+                onClick={() => setMode("all")}
+                aria-label="Clear mode filter"
+                className="inline-flex items-center gap-1 rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-2.5 py-1 text-xs text-[hsl(var(--foreground))/0.6] hover:text-neon hover:border-[hsl(var(--neon))/0.5] transition"
               >
-                {MODE_LABEL[m]}
+                <X className="h-3 w-3" /> Clear
               </button>
-            );
-          })}
-          {mode !== "all" && (
+            )}
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <button
-              onClick={() => setMode("all")}
-              aria-label="Clear mode filter"
-              className="inline-flex items-center gap-1 rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-2.5 py-1 text-xs text-[hsl(var(--foreground))/0.6] hover:text-neon hover:border-[hsl(var(--neon))/0.5] transition"
+              onClick={runMode}
+              aria-label={`Run ${MODE_LABEL[mode]} check now`}
+              title="Scan your text using the current mode"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.12] px-3 py-1 text-xs sm:text-sm font-semibold text-neon hover:bg-[hsl(var(--neon))/0.2] transition shadow-[0_0_14px_hsl(var(--neon)/0.25)]"
             >
-              <X className="h-3 w-3" /> Clear
+              <Play className="h-3.5 w-3.5" /> Run this mode
             </button>
-          )}
-          <button
-            onClick={runMode}
-            aria-label={`Run ${MODE_LABEL[mode]} check now`}
-            title="Scan your text using the current mode"
-            className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.12] px-3 py-1 text-xs sm:text-sm font-semibold text-neon hover:bg-[hsl(var(--neon))/0.2] transition shadow-[0_0_14px_hsl(var(--neon)/0.25)]"
-          >
-            <Play className="h-3.5 w-3.5" /> Run this mode
-          </button>
-          <label
-            title="Automatically scan as you paste or edit text"
-            className={
-              autoRun
-                ? "inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.12] px-3 py-1 text-xs sm:text-sm font-semibold text-neon cursor-pointer transition"
-                : "inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon cursor-pointer transition"
-            }
-          >
-            <input
-              type="checkbox"
-              checked={autoRun}
-              onChange={(e) => {
-                const next = e.target.checked;
-                setAutoRun(next);
-                toast.info(next ? "Auto-run enabled" : "Auto-run disabled", {
-                  description: next
-                    ? "Your text will be scanned automatically as you type or paste."
-                    : "Use the Run this mode button to scan manually.",
-                  id: "auto-run-toggle",
-                });
-              }}
-              className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
-              aria-label="Toggle auto-run on text changes"
-            />
-            Auto-run
-          </label>
+            <label
+              title="Automatically scan as you paste or edit text"
+              className={
+                autoRun
+                  ? "inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.12] px-3 py-1 text-xs sm:text-sm font-semibold text-neon cursor-pointer transition"
+                  : "inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon cursor-pointer transition"
+              }
+            >
+              <input
+                type="checkbox"
+                checked={autoRun}
+                onChange={(e) => {
+                  const next = e.target.checked;
+                  setAutoRun(next);
+                  toast.info(next ? "Auto-run enabled" : "Auto-run disabled", {
+                    description: next
+                      ? "Your text will be scanned automatically as you type or paste."
+                      : "Use the Run this mode button to scan manually.",
+                    id: "auto-run-toggle",
+                  });
+                }}
+                className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+                aria-label="Toggle auto-run on text changes"
+              />
+              Auto-run
+            </label>
+          </div>
         </div>
         {mode !== "all" && (
           <p className="mt-2 text-center text-xs text-[hsl(var(--foreground))/0.55]">
