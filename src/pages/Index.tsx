@@ -607,7 +607,7 @@ const Index = () => {
           {/* Middle: Preview with highlights */}
           <div ref={resultsRef} className="flex flex-col scroll-mt-6">
             <div className="panel p-4 flex flex-col flex-1">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
                 <h3 className="text-sm font-bold tracking-wider text-neon uppercase">Preview with Highlights</h3>
                 <div className="flex gap-2">
                   <button
