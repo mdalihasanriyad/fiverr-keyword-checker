@@ -695,7 +695,7 @@ const Index = () => {
                 </div>
                 <div className="flex flex-col gap-1.5 font-mono text-sm">
                   {uniqueDetected.map((kw) => (
-                    <div key={kw} className="flex items-center gap-2">
+                    <div key={kw} className="flex flex-wrap items-center gap-2">
                       <span className="text-[hsl(var(--foreground))/0.6]">{kw}</span>
                       <span className="text-[hsl(var(--foreground))/0.4]">=</span>
                       <span className="rounded-md bg-[hsl(var(--background))] border border-[hsl(var(--panel-border))/0.5] px-2 py-0.5">
