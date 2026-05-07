@@ -628,7 +628,12 @@ const Index = () => {
                   </button>
                 </div>
               </div>
-              <div className="whitespace-pre-wrap leading-relaxed text-[hsl(var(--foreground))/0.95] min-h-[120px] flex-1">
+              <div
+                className={cn(
+                  "relative whitespace-pre-wrap leading-relaxed text-[hsl(var(--foreground))/0.95] min-h-[120px] flex-1 transition-all",
+                  !previewExpanded && "max-h-[160px] overflow-hidden sm:max-h-none sm:overflow-visible"
+                )}
+              >
                 {highlighted.map((p, i) =>
                   p.type === "hit" ? (
                     <span
@@ -641,7 +646,19 @@ const Index = () => {
                     <span key={i}>{p.value}</span>
                   ),
                 )}
+                {!previewExpanded && (
+                  <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[hsl(var(--panel))] to-transparent pointer-events-none sm:hidden" />
+                )}
               </div>
+              {text.length > 120 && (
+                <button
+                  onClick={() => setPreviewExpanded((v) => !v)}
+                  className="mt-2 self-center inline-flex items-center gap-1 text-xs font-medium text-neon hover:underline sm:hidden"
+                >
+                  {previewExpanded ? "Show less" : "Show more"}
+                  <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", previewExpanded && "rotate-180")} />
+                </button>
+              )}
             </div>
           </div>
 
