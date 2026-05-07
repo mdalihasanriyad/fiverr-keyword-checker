@@ -471,7 +471,7 @@ const Index = () => {
             <ShieldAlert className="h-4 w-4" />
             Fiverr Compliance Tool
           </span>
-          <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
             Fiverr Keyword <span className="text-neon">Checker</span>
           </h1>
           <p className="text-muted-foreground/80 text-[hsl(var(--foreground))/0.6]">
