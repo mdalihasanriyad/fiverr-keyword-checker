@@ -735,7 +735,12 @@ const Index = () => {
                     </span>
                   ))}
                 </div>
-                <div className="flex flex-col gap-1.5 font-mono text-sm">
+                <div
+                  className={cn(
+                    "relative flex flex-col gap-1.5 font-mono text-sm transition-all",
+                    !keywordsExpanded && "max-h-[120px] overflow-hidden sm:max-h-none sm:overflow-visible"
+                  )}
+                >
                   {uniqueDetected.map((kw) => (
                     <div key={kw} className="flex flex-wrap items-center gap-2">
                       <span className="text-[hsl(var(--foreground))/0.6]">{kw}</span>
@@ -745,7 +750,19 @@ const Index = () => {
                       </span>
                     </div>
                   ))}
+                  {!keywordsExpanded && (
+                    <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[hsl(var(--panel))] to-transparent pointer-events-none sm:hidden" />
+                  )}
                 </div>
+                {uniqueDetected.length > 3 && (
+                  <button
+                    onClick={() => setKeywordsExpanded((v) => !v)}
+                    className="mt-2 self-center inline-flex items-center gap-1 text-xs font-medium text-neon hover:underline sm:hidden"
+                  >
+                    {keywordsExpanded ? "Show less" : "Show more"}
+                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", keywordsExpanded && "rotate-180")} />
+                  </button>
+                )}
               </div>
             </>
           )}
