@@ -221,6 +221,12 @@ const Index = () => {
     } catch {}
   }, [autoRun]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(PREVIEW_EXPANDED_KEY, previewExpanded ? "1" : "0");
+    } catch {}
+  }, [previewExpanded]);
+
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
