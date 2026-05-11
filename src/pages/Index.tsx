@@ -18,6 +18,7 @@ const STORAGE_KEY = "keyword-guard:keywords-v2";
 const TEXT_KEY = "keyword-guard:text-v1";
 const TEXTAREA_STATE_KEY = "keyword-guard:textarea-state-v1";
 const AUTO_RUN_KEY = "keyword-guard:auto-run-v1";
+const PREVIEW_EXPANDED_KEY = "keyword-guard:preview-expanded-v1";
 
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
@@ -167,7 +168,14 @@ const Index = () => {
   }, [text]);
 
   const [editorOpen, setEditorOpen] = useState(false);
-  const [previewExpanded, setPreviewExpanded] = useState(false);
+  const [previewExpanded, setPreviewExpanded] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem(PREVIEW_EXPANDED_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
     try {
@@ -212,6 +220,12 @@ const Index = () => {
       localStorage.setItem(AUTO_RUN_KEY, autoRun ? "1" : "0");
     } catch {}
   }, [autoRun]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(PREVIEW_EXPANDED_KEY, previewExpanded ? "1" : "0");
+    } catch {}
+  }, [previewExpanded]);
 
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
