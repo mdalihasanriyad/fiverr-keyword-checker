@@ -19,6 +19,7 @@ const TEXT_KEY = "keyword-guard:text-v1";
 const TEXTAREA_STATE_KEY = "keyword-guard:textarea-state-v1";
 const AUTO_RUN_KEY = "keyword-guard:auto-run-v1";
 const PREVIEW_EXPANDED_KEY = "keyword-guard:preview-expanded-v1";
+const KEYWORDS_EXPANDED_KEY = "keyword-guard:keywords-expanded-v1";
 
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
@@ -176,6 +177,14 @@ const Index = () => {
       return false;
     }
   });
+  const [keywordsExpanded, setKeywordsExpanded] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem(KEYWORDS_EXPANDED_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
     try {
@@ -220,13 +229,11 @@ const Index = () => {
       localStorage.setItem(AUTO_RUN_KEY, autoRun ? "1" : "0");
     } catch {}
   }, [autoRun]);
-
   useEffect(() => {
     try {
-      localStorage.setItem(PREVIEW_EXPANDED_KEY, previewExpanded ? "1" : "0");
+      localStorage.setItem(KEYWORDS_EXPANDED_KEY, keywordsExpanded ? "1" : "0");
     } catch {}
-  }, [previewExpanded]);
-
+  }, [keywordsExpanded]);
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -728,7 +735,12 @@ const Index = () => {
                     </span>
                   ))}
                 </div>
-                <div className="flex flex-col gap-1.5 font-mono text-sm">
+                <div
+                  className={cn(
+                    "relative flex flex-col gap-1.5 font-mono text-sm transition-all",
+                    !keywordsExpanded && "max-h-[120px] overflow-hidden sm:max-h-none sm:overflow-visible"
+                  )}
+                >
                   {uniqueDetected.map((kw) => (
                     <div key={kw} className="flex flex-wrap items-center gap-2">
                       <span className="text-[hsl(var(--foreground))/0.6]">{kw}</span>
@@ -738,7 +750,19 @@ const Index = () => {
                       </span>
                     </div>
                   ))}
+                  {!keywordsExpanded && (
+                    <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[hsl(var(--panel))] to-transparent pointer-events-none sm:hidden" />
+                  )}
                 </div>
+                {uniqueDetected.length > 3 && (
+                  <button
+                    onClick={() => setKeywordsExpanded((v) => !v)}
+                    className="mt-2 self-center inline-flex items-center gap-1 text-xs font-medium text-neon hover:underline sm:hidden"
+                  >
+                    {keywordsExpanded ? "Show less" : "Show more"}
+                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", keywordsExpanded && "rotate-180")} />
+                  </button>
+                )}
               </div>
             </>
           )}
