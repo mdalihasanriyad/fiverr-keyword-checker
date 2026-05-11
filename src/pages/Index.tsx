@@ -177,6 +177,14 @@ const Index = () => {
       return false;
     }
   });
+  const [keywordsExpanded, setKeywordsExpanded] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem(KEYWORDS_EXPANDED_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
     try {
