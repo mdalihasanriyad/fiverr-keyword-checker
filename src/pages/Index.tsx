@@ -20,6 +20,7 @@ const TEXTAREA_STATE_KEY = "keyword-guard:textarea-state-v1";
 const AUTO_RUN_KEY = "keyword-guard:auto-run-v1";
 const PREVIEW_EXPANDED_KEY = "keyword-guard:preview-expanded-v1";
 const KEYWORDS_EXPANDED_KEY = "keyword-guard:keywords-expanded-v1";
+const EXACT_MATCH_KEY = "keyword-guard:exact-match-v1";
 
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
@@ -185,6 +186,14 @@ const Index = () => {
       return false;
     }
   });
+  const [exactMatchOnly, setExactMatchOnly] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem(EXACT_MATCH_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
     try {
@@ -234,6 +243,11 @@ const Index = () => {
       localStorage.setItem(KEYWORDS_EXPANDED_KEY, keywordsExpanded ? "1" : "0");
     } catch {}
   }, [keywordsExpanded]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(EXACT_MATCH_KEY, exactMatchOnly ? "1" : "0");
+    } catch {}
+  }, [exactMatchOnly]);
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -292,6 +306,21 @@ const Index = () => {
     () => Array.from(new Set(detected.map((d) => d.keyword.toLowerCase()))),
     [detected],
   );
+
+  // Exact-match keywords: at least one detected occurrence's text === keyword (case-sensitive).
+  const exactMatchKeywords = useMemo(() => {
+    const set = new Set<string>();
+    detected.forEach((d) => {
+      const matchedText = text.slice(d.index, d.index + d.length);
+      if (matchedText === d.keyword) set.add(d.keyword.toLowerCase());
+    });
+    return set;
+  }, [detected, text]);
+
+  const displayedKeywords = useMemo(() => {
+    if (!exactMatchOnly) return uniqueDetected;
+    return uniqueDetected.filter((kw) => exactMatchKeywords.has(kw.toLowerCase()));
+  }, [uniqueDetected, exactMatchKeywords, exactMatchOnly]);
 
   // Auto-run summary: when enabled, debounce-emit a toast reflecting the latest scan.
   // Uses a signature so we don't re-toast for identical results (e.g. cursor-only edits).
@@ -719,14 +748,25 @@ const Index = () => {
                 </div>
               </div>
               <div className="panel p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle className="h-4 w-4 text-[hsl(var(--danger))]" />
-                  <h3 className="text-sm font-bold tracking-wider text-[hsl(var(--danger))] uppercase">
-                    Detected Keywords
-                  </h3>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-[hsl(var(--danger))]" />
+                    <h3 className="text-sm font-bold tracking-wider text-[hsl(var(--danger))] uppercase">
+                      Detected Keywords
+                    </h3>
+                  </div>
+                  <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
+                    <input
+                      type="checkbox"
+                      checked={exactMatchOnly}
+                      onChange={(e) => setExactMatchOnly(e.target.checked)}
+                      className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+                    />
+                    Exact match only
+                  </label>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
-                  {uniqueDetected.map((kw) => (
+                  {displayedKeywords.map((kw) => (
                     <span
                       key={kw}
                       className="rounded-full bg-[hsl(var(--danger))] text-white px-3 py-1 text-sm font-medium"
@@ -741,7 +781,7 @@ const Index = () => {
                     !keywordsExpanded && "max-h-[120px] overflow-hidden sm:max-h-none sm:overflow-visible"
                   )}
                 >
-                  {uniqueDetected.map((kw) => (
+                  {displayedKeywords.map((kw) => (
                     <div key={kw} className="flex flex-wrap items-center gap-2">
                       <span className="text-[hsl(var(--foreground))/0.6]">{kw}</span>
                       <span className="text-[hsl(var(--foreground))/0.4]">=</span>
@@ -754,7 +794,7 @@ const Index = () => {
                     <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[hsl(var(--panel))] to-transparent pointer-events-none sm:hidden" />
                   )}
                 </div>
-                {uniqueDetected.length > 3 && (
+                {displayedKeywords.length > 3 && (
                   <button
                     onClick={() => setKeywordsExpanded((v) => !v)}
                     className="mt-2 self-center inline-flex items-center gap-1 text-xs font-medium text-neon hover:underline sm:hidden"
