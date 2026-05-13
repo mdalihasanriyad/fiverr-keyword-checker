@@ -781,15 +781,26 @@ const Index = () => {
                       Detected Keywords
                     </h3>
                   </div>
-                  <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
-                    <input
-                      type="checkbox"
-                      checked={exactMatchOnly}
-                      onChange={(e) => setExactMatchOnly(e.target.checked)}
-                      className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
-                    />
-                    Exact match only
-                  </label>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                    <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
+                      <input
+                        type="checkbox"
+                        checked={exactMatchOnly}
+                        onChange={(e) => setExactMatchOnly(e.target.checked)}
+                        className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+                      />
+                      Exact match only
+                    </label>
+                    <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
+                      <input
+                        type="checkbox"
+                        checked={ciExactMatchOnly}
+                        onChange={(e) => setCiExactMatchOnly(e.target.checked)}
+                        className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+                      />
+                      Case-insensitive exact match
+                    </label>
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {displayedKeywords.map((kw) => (
