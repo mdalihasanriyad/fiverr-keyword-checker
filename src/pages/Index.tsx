@@ -748,14 +748,25 @@ const Index = () => {
                 </div>
               </div>
               <div className="panel p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle className="h-4 w-4 text-[hsl(var(--danger))]" />
-                  <h3 className="text-sm font-bold tracking-wider text-[hsl(var(--danger))] uppercase">
-                    Detected Keywords
-                  </h3>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-[hsl(var(--danger))]" />
+                    <h3 className="text-sm font-bold tracking-wider text-[hsl(var(--danger))] uppercase">
+                      Detected Keywords
+                    </h3>
+                  </div>
+                  <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
+                    <input
+                      type="checkbox"
+                      checked={exactMatchOnly}
+                      onChange={(e) => setExactMatchOnly(e.target.checked)}
+                      className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+                    />
+                    Exact match only
+                  </label>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
-                  {uniqueDetected.map((kw) => (
+                  {displayedKeywords.map((kw) => (
                     <span
                       key={kw}
                       className="rounded-full bg-[hsl(var(--danger))] text-white px-3 py-1 text-sm font-medium"
@@ -770,7 +781,7 @@ const Index = () => {
                     !keywordsExpanded && "max-h-[120px] overflow-hidden sm:max-h-none sm:overflow-visible"
                   )}
                 >
-                  {uniqueDetected.map((kw) => (
+                  {displayedKeywords.map((kw) => (
                     <div key={kw} className="flex flex-wrap items-center gap-2">
                       <span className="text-[hsl(var(--foreground))/0.6]">{kw}</span>
                       <span className="text-[hsl(var(--foreground))/0.4]">=</span>
@@ -783,7 +794,7 @@ const Index = () => {
                     <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[hsl(var(--panel))] to-transparent pointer-events-none sm:hidden" />
                   )}
                 </div>
-                {uniqueDetected.length > 3 && (
+                {displayedKeywords.length > 3 && (
                   <button
                     onClick={() => setKeywordsExpanded((v) => !v)}
                     className="mt-2 self-center inline-flex items-center gap-1 text-xs font-medium text-neon hover:underline sm:hidden"
