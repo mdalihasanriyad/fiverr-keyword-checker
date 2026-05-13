@@ -307,6 +307,21 @@ const Index = () => {
     [detected],
   );
 
+  // Exact-match keywords: at least one detected occurrence's text === keyword (case-sensitive).
+  const exactMatchKeywords = useMemo(() => {
+    const set = new Set<string>();
+    detected.forEach((d) => {
+      const matchedText = text.slice(d.index, d.index + d.length);
+      if (matchedText === d.keyword) set.add(d.keyword.toLowerCase());
+    });
+    return set;
+  }, [detected, text]);
+
+  const displayedKeywords = useMemo(() => {
+    if (!exactMatchOnly) return uniqueDetected;
+    return uniqueDetected.filter((kw) => exactMatchKeywords.has(kw.toLowerCase()));
+  }, [uniqueDetected, exactMatchKeywords, exactMatchOnly]);
+
   // Auto-run summary: when enabled, debounce-emit a toast reflecting the latest scan.
   // Uses a signature so we don't re-toast for identical results (e.g. cursor-only edits).
   const lastAutoSignatureRef = useRef<string>("");
