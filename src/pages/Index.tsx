@@ -21,6 +21,7 @@ const AUTO_RUN_KEY = "keyword-guard:auto-run-v1";
 const PREVIEW_EXPANDED_KEY = "keyword-guard:preview-expanded-v1";
 const KEYWORDS_EXPANDED_KEY = "keyword-guard:keywords-expanded-v1";
 const EXACT_MATCH_KEY = "keyword-guard:exact-match-v1";
+const CI_EXACT_MATCH_KEY = "keyword-guard:ci-exact-match-v1";
 
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
@@ -194,6 +195,14 @@ const Index = () => {
       return false;
     }
   });
+  const [ciExactMatchOnly, setCiExactMatchOnly] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem(CI_EXACT_MATCH_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
     try {
@@ -248,6 +257,11 @@ const Index = () => {
       localStorage.setItem(EXACT_MATCH_KEY, exactMatchOnly ? "1" : "0");
     } catch {}
   }, [exactMatchOnly]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(CI_EXACT_MATCH_KEY, ciExactMatchOnly ? "1" : "0");
+    } catch {}
+  }, [ciExactMatchOnly]);
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -317,10 +331,22 @@ const Index = () => {
     return set;
   }, [detected, text]);
 
+  // Case-insensitive exact-match keywords.
+  const ciExactMatchKeywords = useMemo(() => {
+    const set = new Set<string>();
+    detected.forEach((d) => {
+      const matchedText = text.slice(d.index, d.index + d.length);
+      if (matchedText.toLowerCase() === d.keyword.toLowerCase()) set.add(d.keyword.toLowerCase());
+    });
+    return set;
+  }, [detected, text]);
+
   const displayedKeywords = useMemo(() => {
-    if (!exactMatchOnly) return uniqueDetected;
-    return uniqueDetected.filter((kw) => exactMatchKeywords.has(kw.toLowerCase()));
-  }, [uniqueDetected, exactMatchKeywords, exactMatchOnly]);
+    let result = uniqueDetected;
+    if (exactMatchOnly) result = result.filter((kw) => exactMatchKeywords.has(kw.toLowerCase()));
+    if (ciExactMatchOnly) result = result.filter((kw) => ciExactMatchKeywords.has(kw.toLowerCase()));
+    return result;
+  }, [uniqueDetected, exactMatchKeywords, ciExactMatchKeywords, exactMatchOnly, ciExactMatchOnly]);
 
   // Auto-run summary: when enabled, debounce-emit a toast reflecting the latest scan.
   // Uses a signature so we don't re-toast for identical results (e.g. cursor-only edits).
@@ -755,15 +781,26 @@ const Index = () => {
                       Detected Keywords
                     </h3>
                   </div>
-                  <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
-                    <input
-                      type="checkbox"
-                      checked={exactMatchOnly}
-                      onChange={(e) => setExactMatchOnly(e.target.checked)}
-                      className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
-                    />
-                    Exact match only
-                  </label>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                    <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
+                      <input
+                        type="checkbox"
+                        checked={exactMatchOnly}
+                        onChange={(e) => setExactMatchOnly(e.target.checked)}
+                        className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+                      />
+                      Exact match only
+                    </label>
+                    <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
+                      <input
+                        type="checkbox"
+                        checked={ciExactMatchOnly}
+                        onChange={(e) => setCiExactMatchOnly(e.target.checked)}
+                        className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+                      />
+                      Case-insensitive exact match
+                    </label>
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {displayedKeywords.map((kw) => (
