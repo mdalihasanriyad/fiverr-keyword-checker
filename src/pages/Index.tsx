@@ -331,10 +331,22 @@ const Index = () => {
     return set;
   }, [detected, text]);
 
+  // Case-insensitive exact-match keywords.
+  const ciExactMatchKeywords = useMemo(() => {
+    const set = new Set<string>();
+    detected.forEach((d) => {
+      const matchedText = text.slice(d.index, d.index + d.length);
+      if (matchedText.toLowerCase() === d.keyword.toLowerCase()) set.add(d.keyword.toLowerCase());
+    });
+    return set;
+  }, [detected, text]);
+
   const displayedKeywords = useMemo(() => {
-    if (!exactMatchOnly) return uniqueDetected;
-    return uniqueDetected.filter((kw) => exactMatchKeywords.has(kw.toLowerCase()));
-  }, [uniqueDetected, exactMatchKeywords, exactMatchOnly]);
+    let result = uniqueDetected;
+    if (exactMatchOnly) result = result.filter((kw) => exactMatchKeywords.has(kw.toLowerCase()));
+    if (ciExactMatchOnly) result = result.filter((kw) => ciExactMatchKeywords.has(kw.toLowerCase()));
+    return result;
+  }, [uniqueDetected, exactMatchKeywords, ciExactMatchKeywords, exactMatchOnly, ciExactMatchOnly]);
 
   // Auto-run summary: when enabled, debounce-emit a toast reflecting the latest scan.
   // Uses a signature so we don't re-toast for identical results (e.g. cursor-only edits).
