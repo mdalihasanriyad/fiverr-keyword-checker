@@ -195,6 +195,14 @@ const Index = () => {
       return false;
     }
   });
+  const [ciExactMatchOnly, setCiExactMatchOnly] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem(CI_EXACT_MATCH_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
     try {
