@@ -243,6 +243,11 @@ const Index = () => {
       localStorage.setItem(KEYWORDS_EXPANDED_KEY, keywordsExpanded ? "1" : "0");
     } catch {}
   }, [keywordsExpanded]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(EXACT_MATCH_KEY, exactMatchOnly ? "1" : "0");
+    } catch {}
+  }, [exactMatchOnly]);
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
