@@ -204,6 +204,14 @@ const Index = () => {
       return false;
     }
   });
+  const [filterCombineMode, setFilterCombineMode] = useState<"and" | "or">(() => {
+    if (typeof window === "undefined") return "and";
+    try {
+      const raw = localStorage.getItem(FILTER_COMBINE_KEY);
+      if (raw === "or") return "or";
+    } catch {}
+    return "and";
+  });
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
     try {
