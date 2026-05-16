@@ -817,29 +817,42 @@ const Index = () => {
                       />
                       Exact match only
                     </label>
-                  <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
-                    <input
-                      type="checkbox"
-                      checked={ciExactMatchOnly}
-                      onChange={(e) => setCiExactMatchOnly(e.target.checked)}
-                      className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
-                    />
-                    Case-insensitive exact match
-                  </label>
-                  {exactMatchOnly && ciExactMatchOnly && (
-                    <div className="inline-flex items-center gap-1 text-xs">
-                      <span className="text-[hsl(var(--foreground))/0.5]">Match</span>
+                    <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
+                      <input
+                        type="checkbox"
+                        checked={ciExactMatchOnly}
+                        onChange={(e) => setCiExactMatchOnly(e.target.checked)}
+                        className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+                      />
+                      Case-insensitive exact match
+                    </label>
+                    {exactMatchOnly && ciExactMatchOnly && (
+                      <div className="inline-flex items-center gap-1 text-xs">
+                        <span className="text-[hsl(var(--foreground))/0.5]">Match</span>
+                        <button
+                          onClick={() => setFilterCombineMode((m) => (m === "and" ? "or" : "and"))}
+                          className="inline-flex items-center gap-1 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-2 py-0.5 text-neon hover:bg-[hsl(var(--neon))/0.15] transition"
+                          title="Toggle between AND and OR logic"
+                        >
+                          {filterCombineMode === "and" ? "All" : "Any"}
+                        </button>
+                      </div>
+                    )}
+                    {(exactMatchOnly || ciExactMatchOnly) && (
                       <button
-                        onClick={() => setFilterCombineMode((m) => (m === "and" ? "or" : "and"))}
-                        className="inline-flex items-center gap-1 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-2 py-0.5 text-neon hover:bg-[hsl(var(--neon))/0.15] transition"
-                        title="Toggle between AND and OR logic"
+                        onClick={() => {
+                          setExactMatchOnly(false);
+                          setCiExactMatchOnly(false);
+                          setFilterCombineMode("and");
+                          toast.info("Filters cleared");
+                        }}
+                        className="inline-flex items-center gap-1 text-xs text-[hsl(var(--foreground))/0.5] hover:text-neon transition"
+                        title="Reset all filters to defaults"
                       >
-                        {filterCombineMode === "and" ? "All" : "Any"}
+                        <X className="h-3 w-3" /> Clear filters
                       </button>
-                    </div>
-                  )}
-                </div>
-                </div>
+                    )}
+                  </div>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {displayedKeywords.map((kw) => (
                     <span
