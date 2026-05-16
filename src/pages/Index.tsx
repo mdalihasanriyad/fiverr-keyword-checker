@@ -271,6 +271,11 @@ const Index = () => {
       localStorage.setItem(CI_EXACT_MATCH_KEY, ciExactMatchOnly ? "1" : "0");
     } catch {}
   }, [ciExactMatchOnly]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(FILTER_COMBINE_KEY, filterCombineMode);
+    } catch {}
+  }, [filterCombineMode]);
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
