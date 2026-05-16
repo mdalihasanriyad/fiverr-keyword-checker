@@ -357,10 +357,22 @@ const Index = () => {
 
   const displayedKeywords = useMemo(() => {
     let result = uniqueDetected;
-    if (exactMatchOnly) result = result.filter((kw) => exactMatchKeywords.has(kw.toLowerCase()));
-    if (ciExactMatchOnly) result = result.filter((kw) => ciExactMatchKeywords.has(kw.toLowerCase()));
+    if (exactMatchOnly && ciExactMatchOnly) {
+      if (filterCombineMode === "or") {
+        result = result.filter(
+          (kw) => exactMatchKeywords.has(kw.toLowerCase()) || ciExactMatchKeywords.has(kw.toLowerCase()),
+        );
+      } else {
+        result = result.filter(
+          (kw) => exactMatchKeywords.has(kw.toLowerCase()) && ciExactMatchKeywords.has(kw.toLowerCase()),
+        );
+      }
+    } else {
+      if (exactMatchOnly) result = result.filter((kw) => exactMatchKeywords.has(kw.toLowerCase()));
+      if (ciExactMatchOnly) result = result.filter((kw) => ciExactMatchKeywords.has(kw.toLowerCase()));
+    }
     return result;
-  }, [uniqueDetected, exactMatchKeywords, ciExactMatchKeywords, exactMatchOnly, ciExactMatchOnly]);
+  }, [uniqueDetected, exactMatchKeywords, ciExactMatchKeywords, exactMatchOnly, ciExactMatchOnly, filterCombineMode]);
 
   // Auto-run summary: when enabled, debounce-emit a toast reflecting the latest scan.
   // Uses a signature so we don't re-toast for identical results (e.g. cursor-only edits).
