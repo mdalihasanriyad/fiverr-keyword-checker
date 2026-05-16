@@ -853,6 +853,7 @@ const Index = () => {
                       </button>
                     )}
                   </div>
+                </div>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {displayedKeywords.map((kw) => (
                     <span
