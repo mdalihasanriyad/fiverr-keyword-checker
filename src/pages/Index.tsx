@@ -22,6 +22,7 @@ const PREVIEW_EXPANDED_KEY = "keyword-guard:preview-expanded-v1";
 const KEYWORDS_EXPANDED_KEY = "keyword-guard:keywords-expanded-v1";
 const EXACT_MATCH_KEY = "keyword-guard:exact-match-v1";
 const CI_EXACT_MATCH_KEY = "keyword-guard:ci-exact-match-v1";
+const FILTER_COMBINE_KEY = "keyword-guard:filter-combine-v1";
 
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
@@ -203,6 +204,14 @@ const Index = () => {
       return false;
     }
   });
+  const [filterCombineMode, setFilterCombineMode] = useState<"and" | "or">(() => {
+    if (typeof window === "undefined") return "and";
+    try {
+      const raw = localStorage.getItem(FILTER_COMBINE_KEY);
+      if (raw === "or") return "or";
+    } catch {}
+    return "and";
+  });
   const [hyphenStyle, setHyphenStyle] = useState<HyphenStyle>(() => {
     if (typeof window === "undefined") return "after-second";
     try {
@@ -262,6 +271,11 @@ const Index = () => {
       localStorage.setItem(CI_EXACT_MATCH_KEY, ciExactMatchOnly ? "1" : "0");
     } catch {}
   }, [ciExactMatchOnly]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(FILTER_COMBINE_KEY, filterCombineMode);
+    } catch {}
+  }, [filterCombineMode]);
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -343,10 +357,22 @@ const Index = () => {
 
   const displayedKeywords = useMemo(() => {
     let result = uniqueDetected;
-    if (exactMatchOnly) result = result.filter((kw) => exactMatchKeywords.has(kw.toLowerCase()));
-    if (ciExactMatchOnly) result = result.filter((kw) => ciExactMatchKeywords.has(kw.toLowerCase()));
+    if (exactMatchOnly && ciExactMatchOnly) {
+      if (filterCombineMode === "or") {
+        result = result.filter(
+          (kw) => exactMatchKeywords.has(kw.toLowerCase()) || ciExactMatchKeywords.has(kw.toLowerCase()),
+        );
+      } else {
+        result = result.filter(
+          (kw) => exactMatchKeywords.has(kw.toLowerCase()) && ciExactMatchKeywords.has(kw.toLowerCase()),
+        );
+      }
+    } else {
+      if (exactMatchOnly) result = result.filter((kw) => exactMatchKeywords.has(kw.toLowerCase()));
+      if (ciExactMatchOnly) result = result.filter((kw) => ciExactMatchKeywords.has(kw.toLowerCase()));
+    }
     return result;
-  }, [uniqueDetected, exactMatchKeywords, ciExactMatchKeywords, exactMatchOnly, ciExactMatchOnly]);
+  }, [uniqueDetected, exactMatchKeywords, ciExactMatchKeywords, exactMatchOnly, ciExactMatchOnly, filterCombineMode]);
 
   // Auto-run summary: when enabled, debounce-emit a toast reflecting the latest scan.
   // Uses a signature so we don't re-toast for identical results (e.g. cursor-only edits).
@@ -791,16 +817,28 @@ const Index = () => {
                       />
                       Exact match only
                     </label>
-                    <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
-                      <input
-                        type="checkbox"
-                        checked={ciExactMatchOnly}
-                        onChange={(e) => setCiExactMatchOnly(e.target.checked)}
-                        className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
-                      />
-                      Case-insensitive exact match
-                    </label>
-                  </div>
+                  <label className="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-[hsl(var(--foreground))/0.75]">
+                    <input
+                      type="checkbox"
+                      checked={ciExactMatchOnly}
+                      onChange={(e) => setCiExactMatchOnly(e.target.checked)}
+                      className="h-3.5 w-3.5 accent-[hsl(var(--neon))] cursor-pointer"
+                    />
+                    Case-insensitive exact match
+                  </label>
+                  {exactMatchOnly && ciExactMatchOnly && (
+                    <div className="inline-flex items-center gap-1 text-xs">
+                      <span className="text-[hsl(var(--foreground))/0.5]">Match</span>
+                      <button
+                        onClick={() => setFilterCombineMode((m) => (m === "and" ? "or" : "and"))}
+                        className="inline-flex items-center gap-1 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-2 py-0.5 text-neon hover:bg-[hsl(var(--neon))/0.15] transition"
+                        title="Toggle between AND and OR logic"
+                      >
+                        {filterCombineMode === "and" ? "All" : "Any"}
+                      </button>
+                    </div>
+                  )}
+                </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {displayedKeywords.map((kw) => (
