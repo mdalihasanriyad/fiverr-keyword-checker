@@ -852,6 +852,48 @@ const Index = () => {
                         <X className="h-3 w-3" /> Clear filters
                       </button>
                     )}
+                    <button
+                      onClick={() => {
+                        if (displayedKeywords.length === 0) {
+                          toast.info("No keywords to export");
+                          return;
+                        }
+                        const counts = new Map<string, number>();
+                        detected.forEach((d) => {
+                          const k = d.keyword.toLowerCase();
+                          counts.set(k, (counts.get(k) ?? 0) + 1);
+                        });
+                        const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
+                        const rows = [
+                          ["keyword", "occurrences", "exact_match", "case_insensitive_exact_match"].join(","),
+                          ...displayedKeywords.map((kw) => {
+                            const k = kw.toLowerCase();
+                            return [
+                              escape(kw),
+                              String(counts.get(k) ?? 0),
+                              exactMatchKeywords.has(k) ? "true" : "false",
+                              ciExactMatchKeywords.has(k) ? "true" : "false",
+                            ].join(",");
+                          }),
+                        ].join("\n");
+                        const blob = new Blob([rows], { type: "text/csv;charset=utf-8;" });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+                        a.href = url;
+                        a.download = `detected-keywords-${stamp}.csv`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        toast.success(`Exported ${displayedKeywords.length} keyword${displayedKeywords.length === 1 ? "" : "s"}`);
+                      }}
+                      disabled={displayedKeywords.length === 0}
+                      className="inline-flex items-center gap-1 text-xs text-[hsl(var(--foreground))/0.5] hover:text-neon transition disabled:opacity-40 disabled:hover:text-[hsl(var(--foreground))/0.5]"
+                      title="Download displayed keywords as CSV"
+                    >
+                      <Download className="h-3 w-3" /> Export results
+                    </button>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
