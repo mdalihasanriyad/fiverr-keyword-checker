@@ -286,6 +286,70 @@ const Index = () => {
     } catch {}
   }, [filterCombineMode]);
 
+  const [filterPresets, setFilterPresets] = useState<FilterPreset[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = localStorage.getItem(FILTER_PRESETS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed as FilterPreset[];
+      }
+    } catch {}
+    return [];
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem(FILTER_PRESETS_KEY, JSON.stringify(filterPresets));
+    } catch {}
+  }, [filterPresets]);
+
+  const activePresetId = useMemo(() => {
+    const match = filterPresets.find(
+      (p) =>
+        p.exactMatchOnly === exactMatchOnly &&
+        p.ciExactMatchOnly === ciExactMatchOnly &&
+        p.combineMode === filterCombineMode,
+    );
+    return match?.id ?? "";
+  }, [filterPresets, exactMatchOnly, ciExactMatchOnly, filterCombineMode]);
+
+  const applyPreset = (id: string) => {
+    const preset = filterPresets.find((p) => p.id === id);
+    if (!preset) return;
+    setExactMatchOnly(preset.exactMatchOnly);
+    setCiExactMatchOnly(preset.ciExactMatchOnly);
+    setFilterCombineMode(preset.combineMode);
+    toast.success(`Applied preset "${preset.name}"`);
+  };
+
+  const saveCurrentAsPreset = () => {
+    const name = window.prompt("Name this filter preset")?.trim();
+    if (!name) return;
+    const existing = filterPresets.find((p) => p.name.toLowerCase() === name.toLowerCase());
+    const next: FilterPreset = {
+      id: existing?.id ?? (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`),
+      name,
+      exactMatchOnly,
+      ciExactMatchOnly,
+      combineMode: filterCombineMode,
+    };
+    setFilterPresets((prev) => {
+      const without = prev.filter((p) => p.id !== next.id);
+      return [...without, next];
+    });
+    toast.success(existing ? `Updated preset "${name}"` : `Saved preset "${name}"`);
+  };
+
+  const deletePreset = (id: string) => {
+    const preset = filterPresets.find((p) => p.id === id);
+    if (!preset) return;
+    if (!window.confirm(`Delete preset "${preset.name}"?`)) return;
+    setFilterPresets((prev) => prev.filter((p) => p.id !== id));
+    toast.info(`Deleted preset "${preset.name}"`);
+  };
+
+
+
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
   const modeParam = searchParams.get("mode");
