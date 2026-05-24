@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
-  AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw, Filter, X, Play, ChevronDown, Download,
+  AlertTriangle, Copy, Trash2, Pencil, Sparkles, CheckCircle2, ShieldAlert, Settings, RefreshCw, Filter, X, Play, ChevronDown, Download, Bookmark, Save,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,15 @@ const KEYWORDS_EXPANDED_KEY = "keyword-guard:keywords-expanded-v1";
 const EXACT_MATCH_KEY = "keyword-guard:exact-match-v1";
 const CI_EXACT_MATCH_KEY = "keyword-guard:ci-exact-match-v1";
 const FILTER_COMBINE_KEY = "keyword-guard:filter-combine-v1";
+const FILTER_PRESETS_KEY = "keyword-guard:filter-presets-v1";
+
+type FilterPreset = {
+  id: string;
+  name: string;
+  exactMatchOnly: boolean;
+  ciExactMatchOnly: boolean;
+  combineMode: "and" | "or";
+};
 
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
@@ -276,6 +285,70 @@ const Index = () => {
       localStorage.setItem(FILTER_COMBINE_KEY, filterCombineMode);
     } catch {}
   }, [filterCombineMode]);
+
+  const [filterPresets, setFilterPresets] = useState<FilterPreset[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = localStorage.getItem(FILTER_PRESETS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed as FilterPreset[];
+      }
+    } catch {}
+    return [];
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem(FILTER_PRESETS_KEY, JSON.stringify(filterPresets));
+    } catch {}
+  }, [filterPresets]);
+
+  const activePresetId = useMemo(() => {
+    const match = filterPresets.find(
+      (p) =>
+        p.exactMatchOnly === exactMatchOnly &&
+        p.ciExactMatchOnly === ciExactMatchOnly &&
+        p.combineMode === filterCombineMode,
+    );
+    return match?.id ?? "";
+  }, [filterPresets, exactMatchOnly, ciExactMatchOnly, filterCombineMode]);
+
+  const applyPreset = (id: string) => {
+    const preset = filterPresets.find((p) => p.id === id);
+    if (!preset) return;
+    setExactMatchOnly(preset.exactMatchOnly);
+    setCiExactMatchOnly(preset.ciExactMatchOnly);
+    setFilterCombineMode(preset.combineMode);
+    toast.success(`Applied preset "${preset.name}"`);
+  };
+
+  const saveCurrentAsPreset = () => {
+    const name = window.prompt("Name this filter preset")?.trim();
+    if (!name) return;
+    const existing = filterPresets.find((p) => p.name.toLowerCase() === name.toLowerCase());
+    const next: FilterPreset = {
+      id: existing?.id ?? (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`),
+      name,
+      exactMatchOnly,
+      ciExactMatchOnly,
+      combineMode: filterCombineMode,
+    };
+    setFilterPresets((prev) => {
+      const without = prev.filter((p) => p.id !== next.id);
+      return [...without, next];
+    });
+    toast.success(existing ? `Updated preset "${name}"` : `Saved preset "${name}"`);
+  };
+
+  const deletePreset = (id: string) => {
+    const preset = filterPresets.find((p) => p.id === id);
+    if (!preset) return;
+    if (!window.confirm(`Delete preset "${preset.name}"?`)) return;
+    setFilterPresets((prev) => prev.filter((p) => p.id !== id));
+    toast.info(`Deleted preset "${preset.name}"`);
+  };
+
+
 
   // Mode is driven by ?mode= query param so landing page CTAs can preselect a focus.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -852,6 +925,42 @@ const Index = () => {
                         <X className="h-3 w-3" /> Clear filters
                       </button>
                     )}
+                    <div className="inline-flex items-center gap-1 text-xs">
+                      <Bookmark className="h-3 w-3 text-[hsl(var(--foreground))/0.5]" />
+                      <select
+                        value={activePresetId}
+                        onChange={(e) => {
+                          if (e.target.value) applyPreset(e.target.value);
+                        }}
+                        className="rounded-md border border-[hsl(var(--neon))/0.3] bg-transparent px-1.5 py-0.5 text-xs text-[hsl(var(--foreground))/0.85] hover:border-[hsl(var(--neon))/0.6] focus:outline-none focus:border-neon transition max-w-[10rem]"
+                        title="Apply a saved filter preset"
+                      >
+                        <option value="" className="bg-background">
+                          {filterPresets.length === 0 ? "No presets" : "Presets…"}
+                        </option>
+                        {filterPresets.map((p) => (
+                          <option key={p.id} value={p.id} className="bg-background">
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={saveCurrentAsPreset}
+                        className="inline-flex items-center gap-1 text-[hsl(var(--foreground))/0.5] hover:text-neon transition"
+                        title="Save current filters as a preset"
+                      >
+                        <Save className="h-3 w-3" /> Save
+                      </button>
+                      {activePresetId && (
+                        <button
+                          onClick={() => deletePreset(activePresetId)}
+                          className="inline-flex items-center gap-1 text-[hsl(var(--foreground))/0.5] hover:text-[hsl(var(--danger))] transition"
+                          title="Delete the currently applied preset"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
                     <button
                       onClick={() => {
                         if (displayedKeywords.length === 0) {
