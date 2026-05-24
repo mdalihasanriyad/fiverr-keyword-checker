@@ -23,6 +23,15 @@ const KEYWORDS_EXPANDED_KEY = "keyword-guard:keywords-expanded-v1";
 const EXACT_MATCH_KEY = "keyword-guard:exact-match-v1";
 const CI_EXACT_MATCH_KEY = "keyword-guard:ci-exact-match-v1";
 const FILTER_COMBINE_KEY = "keyword-guard:filter-combine-v1";
+const FILTER_PRESETS_KEY = "keyword-guard:filter-presets-v1";
+
+type FilterPreset = {
+  id: string;
+  name: string;
+  exactMatchOnly: boolean;
+  ciExactMatchOnly: boolean;
+  combineMode: "and" | "or";
+};
 
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
