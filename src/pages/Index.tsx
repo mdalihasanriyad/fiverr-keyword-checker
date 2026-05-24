@@ -925,6 +925,42 @@ const Index = () => {
                         <X className="h-3 w-3" /> Clear filters
                       </button>
                     )}
+                    <div className="inline-flex items-center gap-1 text-xs">
+                      <Bookmark className="h-3 w-3 text-[hsl(var(--foreground))/0.5]" />
+                      <select
+                        value={activePresetId}
+                        onChange={(e) => {
+                          if (e.target.value) applyPreset(e.target.value);
+                        }}
+                        className="rounded-md border border-[hsl(var(--neon))/0.3] bg-transparent px-1.5 py-0.5 text-xs text-[hsl(var(--foreground))/0.85] hover:border-[hsl(var(--neon))/0.6] focus:outline-none focus:border-neon transition max-w-[10rem]"
+                        title="Apply a saved filter preset"
+                      >
+                        <option value="" className="bg-background">
+                          {filterPresets.length === 0 ? "No presets" : "Presets…"}
+                        </option>
+                        {filterPresets.map((p) => (
+                          <option key={p.id} value={p.id} className="bg-background">
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={saveCurrentAsPreset}
+                        className="inline-flex items-center gap-1 text-[hsl(var(--foreground))/0.5] hover:text-neon transition"
+                        title="Save current filters as a preset"
+                      >
+                        <Save className="h-3 w-3" /> Save
+                      </button>
+                      {activePresetId && (
+                        <button
+                          onClick={() => deletePreset(activePresetId)}
+                          className="inline-flex items-center gap-1 text-[hsl(var(--foreground))/0.5] hover:text-[hsl(var(--danger))] transition"
+                          title="Delete the currently applied preset"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
                     <button
                       onClick={() => {
                         if (displayedKeywords.length === 0) {
