@@ -24,6 +24,28 @@ const EXACT_MATCH_KEY = "keyword-guard:exact-match-v1";
 const CI_EXACT_MATCH_KEY = "keyword-guard:ci-exact-match-v1";
 const FILTER_COMBINE_KEY = "keyword-guard:filter-combine-v1";
 const FILTER_PRESETS_KEY = "keyword-guard:filter-presets-v1";
+export const SCROLL_TOP_OFFSET_KEY = "keyword-guard:scroll-top-offset-v1";
+
+export const getScrollTopOffset = (): number => {
+  if (typeof window === "undefined") return 0;
+  try {
+    const raw = localStorage.getItem(SCROLL_TOP_OFFSET_KEY);
+    const n = raw == null ? 0 : parseInt(raw, 10);
+    if (!Number.isFinite(n)) return 0;
+    return Math.max(0, Math.min(500, n));
+  } catch {
+    return 0;
+  }
+};
+
+// Scroll to the top of the page, leaving `offset` px of headroom so the
+// landing position sits below any fixed header / navbar that overlays the
+// top of the viewport.
+export const scrollToTopWithOffset = (offset?: number) => {
+  if (typeof window === "undefined") return;
+  const o = typeof offset === "number" ? offset : getScrollTopOffset();
+  window.scrollTo({ top: o, behavior: "smooth" });
+};
 
 type FilterPreset = {
   id: string;
@@ -285,6 +307,16 @@ const Index = () => {
       localStorage.setItem(FILTER_COMBINE_KEY, filterCombineMode);
     } catch {}
   }, [filterCombineMode]);
+
+
+
+  const [scrollTopOffset, setScrollTopOffset] = useState<number>(() => getScrollTopOffset());
+  useEffect(() => {
+    try {
+      localStorage.setItem(SCROLL_TOP_OFFSET_KEY, String(scrollTopOffset));
+    } catch {}
+  }, [scrollTopOffset]);
+
 
   const [filterPresets, setFilterPresets] = useState<FilterPreset[]>(() => {
     if (typeof window === "undefined") return [];
@@ -563,7 +595,7 @@ const Index = () => {
     }
     const count = detected.length;
     setText("");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToTopWithOffset(scrollTopOffset);
     toast.success("Text cleared", {
       description: count > 0
         ? `Removed your text along with ${count} flagged keyword${count > 1 ? "s" : ""}.`
@@ -582,7 +614,7 @@ const Index = () => {
       el.style.height = "";
       el.scrollTop = 0;
     }
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToTopWithOffset(scrollTopOffset);
     toast.success("Editor reset", {
       description: "Text, height, and scroll position restored to defaults.",
     });
@@ -927,6 +959,27 @@ const Index = () => {
                         <X className="h-3 w-3" /> Clear filters
                       </button>
                     )}
+                    <label
+                      className="inline-flex items-center gap-1.5 text-xs text-[hsl(var(--foreground))/0.6]"
+                      title="Pixels of headroom kept above the page when scrolling to top, so the landing position sits below any fixed header or navbar."
+                    >
+                      Scroll offset
+                      <input
+                        type="number"
+                        min={0}
+                        max={500}
+                        step={4}
+                        value={scrollTopOffset}
+                        onChange={(e) => {
+                          const n = parseInt(e.target.value, 10);
+                          setScrollTopOffset(
+                            Number.isFinite(n) ? Math.max(0, Math.min(500, n)) : 0,
+                          );
+                        }}
+                        className="w-14 rounded-md border border-[hsl(var(--neon))/0.3] bg-transparent px-1.5 py-0.5 text-xs text-[hsl(var(--foreground))/0.85] hover:border-[hsl(var(--neon))/0.6] focus:outline-none focus:border-neon transition"
+                      />
+                      <span className="text-[hsl(var(--foreground))/0.4]">px</span>
+                    </label>
                     <div className="inline-flex items-center gap-1 text-xs">
                       <Bookmark className="h-3 w-3 text-[hsl(var(--foreground))/0.5]" />
                       <select

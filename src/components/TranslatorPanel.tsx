@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Languages, ArrowLeftRight, Copy, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { scrollToTopWithOffset } from "@/pages/Index";
 
 type Direction = "en-bn" | "bn-en";
 
@@ -89,7 +90,7 @@ const TranslatorPanel = () => {
     catch { toast.error("Could not copy"); }
   };
 
-  const clearAll = () => { setSource(""); setTranslation(""); setError(null); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const clearAll = () => { setSource(""); setTranslation(""); setError(null); scrollToTopWithOffset(); };
 
   const dirLabel = DIR_LABEL[direction];
 
