@@ -306,7 +306,14 @@ const Index = () => {
     try {
       localStorage.setItem(FILTER_COMBINE_KEY, filterCombineMode);
     } catch {}
-  }, [filterCombineMode]);
+
+  const [scrollTopOffset, setScrollTopOffset] = useState<number>(() => getScrollTopOffset());
+  useEffect(() => {
+    try {
+      localStorage.setItem(SCROLL_TOP_OFFSET_KEY, String(scrollTopOffset));
+    } catch {}
+  }, [scrollTopOffset]);
+
 
   const [filterPresets, setFilterPresets] = useState<FilterPreset[]>(() => {
     if (typeof window === "undefined") return [];
