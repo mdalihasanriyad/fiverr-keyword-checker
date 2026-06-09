@@ -563,6 +563,7 @@ const Index = () => {
     }
     const count = detected.length;
     setText("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
     toast.success("Text cleared", {
       description: count > 0
         ? `Removed your text along with ${count} flagged keyword${count > 1 ? "s" : ""}.`
@@ -581,6 +582,7 @@ const Index = () => {
       el.style.height = "";
       el.scrollTop = 0;
     }
+    window.scrollTo({ top: 0, behavior: "smooth" });
     toast.success("Editor reset", {
       description: "Text, height, and scroll position restored to defaults.",
     });
