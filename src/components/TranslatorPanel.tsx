@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Languages, ArrowLeftRight, Copy, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { scrollToTopWithOffset } from "@/pages/Index";
 
 type Direction = "en-bn" | "bn-en";
 
