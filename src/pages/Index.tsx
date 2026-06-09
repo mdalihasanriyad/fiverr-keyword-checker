@@ -959,6 +959,27 @@ const Index = () => {
                         <X className="h-3 w-3" /> Clear filters
                       </button>
                     )}
+                    <label
+                      className="inline-flex items-center gap-1.5 text-xs text-[hsl(var(--foreground))/0.6]"
+                      title="Pixels of headroom kept above the page when scrolling to top, so the landing position sits below any fixed header or navbar."
+                    >
+                      Scroll offset
+                      <input
+                        type="number"
+                        min={0}
+                        max={500}
+                        step={4}
+                        value={scrollTopOffset}
+                        onChange={(e) => {
+                          const n = parseInt(e.target.value, 10);
+                          setScrollTopOffset(
+                            Number.isFinite(n) ? Math.max(0, Math.min(500, n)) : 0,
+                          );
+                        }}
+                        className="w-14 rounded-md border border-[hsl(var(--neon))/0.3] bg-transparent px-1.5 py-0.5 text-xs text-[hsl(var(--foreground))/0.85] hover:border-[hsl(var(--neon))/0.6] focus:outline-none focus:border-neon transition"
+                      />
+                      <span className="text-[hsl(var(--foreground))/0.4]">px</span>
+                    </label>
                     <div className="inline-flex items-center gap-1 text-xs">
                       <Bookmark className="h-3 w-3 text-[hsl(var(--foreground))/0.5]" />
                       <select
