@@ -25,7 +25,6 @@ const CI_EXACT_MATCH_KEY = "keyword-guard:ci-exact-match-v1";
 const FILTER_COMBINE_KEY = "keyword-guard:filter-combine-v1";
 const FILTER_PRESETS_KEY = "keyword-guard:filter-presets-v1";
 export const SCROLL_TOP_OFFSET_KEY = "keyword-guard:scroll-top-offset-v1";
-export const SCROLL_TOP_OFFSET_EVENT = "keyword-guard:scroll-top-offset-changed";
 
 export const getScrollTopOffset = (): number => {
   if (typeof window === "undefined") return 0;
