@@ -24,6 +24,31 @@ const EXACT_MATCH_KEY = "keyword-guard:exact-match-v1";
 const CI_EXACT_MATCH_KEY = "keyword-guard:ci-exact-match-v1";
 const FILTER_COMBINE_KEY = "keyword-guard:filter-combine-v1";
 const FILTER_PRESETS_KEY = "keyword-guard:filter-presets-v1";
+export const SCROLL_TOP_OFFSET_KEY = "keyword-guard:scroll-top-offset-v1";
+
+export const getScrollTopOffset = (): number => {
+  if (typeof window === "undefined") return 0;
+  try {
+    const raw = localStorage.getItem(SCROLL_TOP_OFFSET_KEY);
+    const n = raw == null ? 0 : parseInt(raw, 10);
+    if (!Number.isFinite(n)) return 0;
+    return Math.max(0, Math.min(500, n));
+  } catch {
+    return 0;
+  }
+};
+
+export const scrollToTopWithOffset = (offset?: number) => {
+  if (typeof window === "undefined") return;
+  const o = typeof offset === "number" ? offset : getScrollTopOffset();
+  // When an offset is set, land below the fixed header/navbar.
+  // Using a negative top puts the viewport above the document top so the
+  // first content sits `o` px below the top edge after fixed-header layout.
+  window.scrollTo({ top: Math.max(0, 0 - o) === 0 ? 0 : 0, behavior: "smooth" });
+  // The line above always resolves to 0 (can't scroll above 0); instead
+  // scroll to `o` from the top so fixed headers don't cover the content.
+  window.scrollTo({ top: o, behavior: "smooth" });
+};
 
 type FilterPreset = {
   id: string;
