@@ -89,7 +89,7 @@ const TranslatorPanel = () => {
     catch { toast.error("Could not copy"); }
   };
 
-  const clearAll = () => { setSource(""); setTranslation(""); setError(null); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const clearAll = () => { setSource(""); setTranslation(""); setError(null); scrollToTopWithOffset(); };
 
   const dirLabel = DIR_LABEL[direction];
 
