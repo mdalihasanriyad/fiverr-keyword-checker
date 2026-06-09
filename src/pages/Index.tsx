@@ -306,6 +306,9 @@ const Index = () => {
     try {
       localStorage.setItem(FILTER_COMBINE_KEY, filterCombineMode);
     } catch {}
+  }, [filterCombineMode]);
+
+
 
   const [scrollTopOffset, setScrollTopOffset] = useState<number>(() => getScrollTopOffset());
   useEffect(() => {
