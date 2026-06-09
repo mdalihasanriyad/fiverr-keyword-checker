@@ -582,6 +582,7 @@ const Index = () => {
       el.style.height = "";
       el.scrollTop = 0;
     }
+    window.scrollTo({ top: 0, behavior: "smooth" });
     toast.success("Editor reset", {
       description: "Text, height, and scroll position restored to defaults.",
     });
