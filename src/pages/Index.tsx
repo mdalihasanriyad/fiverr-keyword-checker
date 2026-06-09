@@ -39,24 +39,13 @@ export const getScrollTopOffset = (): number => {
   }
 };
 
-// Scroll to the very top of the page, leaving `offset` px of headroom so the
-// landing position is below any fixed header / navbar. Works by combining
-// scroll-padding-top with scrollIntoView on a top sentinel; falls back to
-// window.scrollTo when no offset is configured.
+// Scroll to the top of the page, leaving `offset` px of headroom so the
+// landing position sits below any fixed header / navbar that overlays the
+// top of the viewport.
 export const scrollToTopWithOffset = (offset?: number) => {
   if (typeof window === "undefined") return;
   const o = typeof offset === "number" ? offset : getScrollTopOffset();
-  if (o > 0) {
-    try {
-      document.documentElement.style.scrollPaddingTop = `${o}px`;
-    } catch {}
-    const sentinel = document.getElementById("page-top-sentinel");
-    if (sentinel) {
-      sentinel.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-  }
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: o, behavior: "smooth" });
 };
 
 type FilterPreset = {
