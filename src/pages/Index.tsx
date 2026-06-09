@@ -595,7 +595,7 @@ const Index = () => {
     }
     const count = detected.length;
     setText("");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToTopWithOffset(scrollTopOffset);
     toast.success("Text cleared", {
       description: count > 0
         ? `Removed your text along with ${count} flagged keyword${count > 1 ? "s" : ""}.`
