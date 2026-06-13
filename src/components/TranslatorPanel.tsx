@@ -145,7 +145,7 @@ const TranslatorPanel = () => {
             value={source}
             onChange={(e) => setSource(e.target.value)}
             placeholder={direction === "en-bn" ? "Type or paste English text…" : "এখানে বাংলা লেখা পেস্ট করুন…"}
-            className="w-full min-h-[160px] resize-y bg-transparent outline-none text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--foreground))/0.4]"
+            className="w-full min-h-[280px] resize-y bg-transparent outline-none text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--foreground))/0.4]"
             maxLength={5000}
           />
         </div>
@@ -163,7 +163,7 @@ const TranslatorPanel = () => {
               </button>
             </div>
           </div>
-          <div className="w-full min-h-[160px] whitespace-pre-wrap text-[hsl(var(--foreground))]">
+          <div className="w-full min-h-[280px] whitespace-pre-wrap text-[hsl(var(--foreground))]">
             {translation ? translation : (
               <span className="text-[hsl(var(--foreground))/0.4]">
                 {loading ? "Translating…" : "Translation will appear here."}
