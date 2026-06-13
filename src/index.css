@@ -8,8 +8,6 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-@layer base {
-  :root {
     /* Emerald Prestige palette
        deep emerald #064e3b, jade #0d7a5f, antique gold #c9a84c, parchment #f5f0e0 */
     --background: 158 78% 8%;
