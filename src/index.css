@@ -8,15 +8,19 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 150 60% 4%;
-    --foreground: 140 40% 92%;
+@layer base {
+  :root {
+    /* Emerald Prestige palette
+       deep emerald #064e3b, jade #0d7a5f, antique gold #c9a84c, parchment #f5f0e0 */
+    --background: 158 78% 8%;
+    --foreground: 44 55% 92%;
 
-    --neon: 142 90% 50%;
-    --neon-glow: 142 100% 60%;
-    --danger: 0 85% 60%;
-    --danger-bg: 0 70% 12%;
-    --panel: 150 50% 6%;
-    --panel-border: 142 70% 25%;
+    --neon: 43 53% 54%;          /* antique gold accent (was neon green) */
+    --neon-glow: 43 70% 65%;
+    --danger: 0 75% 60%;
+    --danger-bg: 0 60% 14%;
+    --panel: 160 70% 10%;
+    --panel-border: 156 50% 28%;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
