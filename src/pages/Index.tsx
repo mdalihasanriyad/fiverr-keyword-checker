@@ -59,14 +59,14 @@ type FilterPreset = {
 // You can still set a custom replacement per keyword if you want one.
 const DEFAULT_KEYWORDS: KeywordMap = {
   crypto: "", payment: "", instagram: "", linkedin: "",
-  facebook: "", negative: "", star: "", transferwise: "",
-  account: "", bank: "", messenger: "", skype: "",
-  card: "", credit: "", purchase: "", whatsapp: "",
-  password: "", inbox: "", sms: "", transaction: "",
-  stripe: "", paypal: "", rating: "", rate: "",
-  review: "", euro: "", dollar: "", money: "", pay: "",
-  outside: "", contact: "", email: "", gmail: "",
-  mail: "", "@": "(at)",
+  facebook: "", negative: "", star: "", "five star": "",
+  transferwise: "", account: "", bank: "", messenger: "",
+  skype: "", card: "", credit: "", purchase: "",
+  whatsapp: "", password: "", inbox: "", sms: "",
+  transaction: "", stripe: "", paypal: "", rating: "",
+  rate: "", review: "", euro: "", dollar: "", money: "",
+  pay: "", outside: "", contact: "", email: "",
+  gmail: "", mail: "", "@": "(at)",
 };
 
 // Hyphenation helpers live in src/lib/hyphenate.ts.
