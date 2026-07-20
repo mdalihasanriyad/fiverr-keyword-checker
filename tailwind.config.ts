@@ -85,11 +85,16 @@ export default {
           "30%": { transform: "scale(1.25)", color: "hsl(var(--neon-glow))" },
           "100%": { transform: "scale(1)" },
         },
+        "pulse-glow": {
+          "0%, 100%": { boxShadow: "0 0 0 1px hsl(var(--neon) / 0.5), 0 0 12px -2px hsl(var(--neon) / 0.4)" },
+          "50%": { boxShadow: "0 0 0 1px hsl(var(--neon) / 0.9), 0 0 28px 2px hsl(var(--neon) / 0.7)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "value-pop": "value-pop 0.6s ease-out",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
       },
     },
   },
