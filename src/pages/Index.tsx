@@ -251,6 +251,7 @@ const Index = () => {
     } catch {}
     return "after-second";
   });
+  const [recentlyAdded, setRecentlyAdded] = useState<string[]>([]);
   const [keywords, setKeywords] = useState<KeywordMap>(() => {
     if (typeof window === "undefined") return DEFAULT_KEYWORDS;
     try {
@@ -1169,7 +1170,13 @@ const Index = () => {
         onClose={() => setEditorOpen(false)}
         keywords={keywords}
         onChange={setKeywords}
-        onReset={() => setKeywords(DEFAULT_KEYWORDS)}
+        onReset={() => {
+          const added = Object.keys(DEFAULT_KEYWORDS).filter((k) => !(k in keywords));
+          setKeywords(DEFAULT_KEYWORDS);
+          setRecentlyAdded(added);
+          window.setTimeout(() => setRecentlyAdded([]), 6000);
+        }}
+        recentlyAdded={recentlyAdded}
         hyphenStyle={hyphenStyle}
         onHyphenStyleChange={setHyphenStyle}
       />

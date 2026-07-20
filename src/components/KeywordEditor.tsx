@@ -10,17 +10,24 @@ interface Props {
   keywords: KeywordMap;
   onChange: (next: KeywordMap) => void;
   onReset: () => void;
+  recentlyAdded?: string[];
   hyphenStyle: HyphenStyle;
   onHyphenStyleChange: (style: HyphenStyle) => void;
 }
 
-const KeywordEditor = ({ open, onClose, keywords, onChange, onReset, hyphenStyle, onHyphenStyleChange }: Props) => {
+const KeywordEditor = ({ open, onClose, keywords, onChange, onReset, recentlyAdded = [], hyphenStyle, onHyphenStyleChange }: Props) => {
   const [newKw, setNewKw] = useState("");
   const [newRep, setNewRep] = useState("");
 
   if (!open) return null;
 
-  const entries = Object.entries(keywords).sort(([a], [b]) => a.localeCompare(b));
+  const recentSet = new Set(recentlyAdded);
+  const entries = Object.entries(keywords).sort(([a], [b]) => {
+    const aNew = recentSet.has(a) ? 0 : 1;
+    const bNew = recentSet.has(b) ? 0 : 1;
+    if (aNew !== bNew) return aNew - bNew;
+    return a.localeCompare(b);
+  });
 
   const updateReplacement = (kw: string, rep: string) => {
     onChange({ ...keywords, [kw]: rep });
@@ -159,12 +166,25 @@ const KeywordEditor = ({ open, onClose, keywords, onChange, onReset, hyphenStyle
             {entries.length} Keyword{entries.length !== 1 ? "s" : ""}
           </div>
           <div className="flex flex-col gap-2">
-            {entries.map(([kw, rep]) => (
+            {entries.map(([kw, rep]) => {
+              const isNew = recentSet.has(kw);
+              return (
               <div
                 key={kw}
-                className="grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2 rounded-md border border-[hsl(var(--panel-border))/0.5] bg-[hsl(var(--background))/0.5] p-2"
+                className={
+                  isNew
+                    ? "grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2 rounded-md border border-[hsl(var(--neon))] bg-[hsl(var(--neon))/0.08] p-2 animate-pulse-glow relative"
+                    : "grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2 rounded-md border border-[hsl(var(--panel-border))/0.5] bg-[hsl(var(--background))/0.5] p-2"
+                }
               >
-                <div className="px-2 py-1 font-mono text-sm text-[hsl(var(--danger))] truncate">{kw}</div>
+                <div className="px-2 py-1 font-mono text-sm text-[hsl(var(--danger))] truncate flex items-center gap-2">
+                  <span className="truncate">{kw}</span>
+                  {isNew && (
+                    <span className="shrink-0 rounded-full bg-[hsl(var(--neon))] text-black text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5">
+                      New
+                    </span>
+                  )}
+                </div>
                 <span className="text-[hsl(var(--foreground))/0.4]">→</span>
                 <input
                   value={rep}
@@ -180,7 +200,8 @@ const KeywordEditor = ({ open, onClose, keywords, onChange, onReset, hyphenStyle
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
-            ))}
+              );
+            })}
             {entries.length === 0 && (
               <div className="text-center text-sm text-[hsl(var(--foreground))/0.5] py-8">
                 No keywords. Add one above.
