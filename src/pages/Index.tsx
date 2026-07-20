@@ -1169,7 +1169,13 @@ const Index = () => {
         onClose={() => setEditorOpen(false)}
         keywords={keywords}
         onChange={setKeywords}
-        onReset={() => setKeywords(DEFAULT_KEYWORDS)}
+        onReset={() => {
+          const added = Object.keys(DEFAULT_KEYWORDS).filter((k) => !(k in keywords));
+          setKeywords(DEFAULT_KEYWORDS);
+          setRecentlyAdded(added);
+          window.setTimeout(() => setRecentlyAdded([]), 6000);
+        }}
+        recentlyAdded={recentlyAdded}
         hyphenStyle={hyphenStyle}
         onHyphenStyleChange={setHyphenStyle}
       />
