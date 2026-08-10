@@ -67,6 +67,7 @@ const DEFAULT_KEYWORDS: KeywordMap = {
   rate: "", review: "", euro: "", dollar: "", money: "",
   pay: "", outside: "", contact: "", email: "",
   gmail: "", mail: "", "@": "(at)",
+  reviews: "", payments: "", feedback: "", reviewed: "",
 };
 
 // Hyphenation helpers live in src/lib/hyphenate.ts.
