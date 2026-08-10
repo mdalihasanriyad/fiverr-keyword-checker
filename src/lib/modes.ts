@@ -25,11 +25,12 @@ export const MODE_KEYWORDS: Record<Exclude<CheckerMode, "all">, string[]> = {
   ],
   "compliance": [
     "paypal", "stripe", "transferwise", "bank", "card", "credit",
-    "crypto", "payment", "transaction", "account", "outside", "contact",
+    "crypto", "payment", "payments", "transaction", "account", "outside", "contact",
     "money", "euro", "dollar", "pay", "purchase", "password",
   ],
   "gig-seo": [
-    "rating", "rate", "review", "star", "five star", "negative",
+    "rating", "rate", "review", "reviews", "reviewed", "feedback",
+    "star", "five star", "negative",
   ],
 };
 
