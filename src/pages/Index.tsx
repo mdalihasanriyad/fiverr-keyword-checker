@@ -99,6 +99,7 @@ const Index = () => {
   });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const restoredRef = useRef(false);
 
   // Helper: compute capped height based on viewport.
@@ -567,7 +568,7 @@ const Index = () => {
     });
   };
 
-  const copy = async (val: string) => {
+  const copy = async (val: string, label = "Copied to clipboard") => {
     if (!val) {
       toast.error("Nothing to copy", {
         description: "Your text is empty.",
@@ -578,7 +579,7 @@ const Index = () => {
       await navigator.clipboard.writeText(val);
       const chars = val.length;
       const words = val.trim().split(/\s+/).filter(Boolean).length;
-      toast.success("Copied to clipboard", {
+      toast.success(label, {
         description: `${chars} character${chars !== 1 ? "s" : ""} · ${words} word${words !== 1 ? "s" : ""} copied.`,
       });
     } catch {
@@ -586,6 +587,11 @@ const Index = () => {
         description: "Clipboard access was blocked by your browser.",
       });
     }
+  };
+
+  const copyPreviewText = async () => {
+    const val = previewRef.current?.innerText ?? text;
+    await copy(val, "Preview copied to clipboard");
   };
 
   const clearText = () => {
@@ -832,14 +838,15 @@ const Index = () => {
                     <Pencil className="h-3.5 w-3.5" /> Edit
                   </button>
                   <button
-                    onClick={() => copy(text)}
+                    onClick={copyPreviewText}
                     className="inline-flex items-center gap-1.5 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-2.5 py-1 text-xs text-neon hover:bg-[hsl(var(--neon))/0.15]"
                   >
-                    <Copy className="h-3.5 w-3.5" /> Copy Result
+                    <Copy className="h-3.5 w-3.5" /> Copy preview
                   </button>
                 </div>
               </div>
               <div
+                ref={previewRef}
                 className={cn(
                   "relative whitespace-pre-wrap leading-relaxed text-[hsl(var(--foreground))/0.95] min-h-[120px] flex-1 transition-all",
                   !previewExpanded && "max-h-[160px] overflow-hidden sm:max-h-none sm:overflow-visible"
@@ -856,6 +863,16 @@ const Index = () => {
                   ) : (
                     <span key={i}>{p.value}</span>
                   ),
+                )}
+                {text && (
+                  <button
+                    type="button"
+                    onClick={copyPreviewText}
+                    title="Copy highlighted preview text"
+                    className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-md border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.9] px-2 py-1 text-xs text-[hsl(var(--foreground))/0.6] hover:text-neon hover:border-[hsl(var(--neon))/0.5] transition shadow-sm"
+                  >
+                    <Copy className="h-3.5 w-3.5" /> Copy
+                  </button>
                 )}
                 {!previewExpanded && (
                   <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[hsl(var(--panel))] to-transparent pointer-events-none sm:hidden" />
