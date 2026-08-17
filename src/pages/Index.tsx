@@ -568,7 +568,7 @@ const Index = () => {
     });
   };
 
-  const copy = async (val: string) => {
+  const copy = async (val: string, label = "Copied to clipboard") => {
     if (!val) {
       toast.error("Nothing to copy", {
         description: "Your text is empty.",
@@ -579,7 +579,7 @@ const Index = () => {
       await navigator.clipboard.writeText(val);
       const chars = val.length;
       const words = val.trim().split(/\s+/).filter(Boolean).length;
-      toast.success("Copied to clipboard", {
+      toast.success(label, {
         description: `${chars} character${chars !== 1 ? "s" : ""} · ${words} word${words !== 1 ? "s" : ""} copied.`,
       });
     } catch {
@@ -587,6 +587,11 @@ const Index = () => {
         description: "Clipboard access was blocked by your browser.",
       });
     }
+  };
+
+  const copyPreviewText = async () => {
+    const val = previewRef.current?.innerText ?? text;
+    await copy(val, "Preview copied to clipboard");
   };
 
   const clearText = () => {
