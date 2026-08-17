@@ -838,14 +838,15 @@ const Index = () => {
                     <Pencil className="h-3.5 w-3.5" /> Edit
                   </button>
                   <button
-                    onClick={() => copy(text)}
+                    onClick={copyPreviewText}
                     className="inline-flex items-center gap-1.5 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-2.5 py-1 text-xs text-neon hover:bg-[hsl(var(--neon))/0.15]"
                   >
-                    <Copy className="h-3.5 w-3.5" /> Copy Result
+                    <Copy className="h-3.5 w-3.5" /> Copy preview
                   </button>
                 </div>
               </div>
               <div
+                ref={previewRef}
                 className={cn(
                   "relative whitespace-pre-wrap leading-relaxed text-[hsl(var(--foreground))/0.95] min-h-[120px] flex-1 transition-all",
                   !previewExpanded && "max-h-[160px] overflow-hidden sm:max-h-none sm:overflow-visible"
