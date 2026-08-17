@@ -869,7 +869,7 @@ const Index = () => {
                     type="button"
                     onClick={copyPreviewText}
                     title="Copy highlighted preview text"
-                    className="absolute top-0 right-0 inline-flex items-center gap-1 rounded-md border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.8] px-2 py-1 text-xs text-[hsl(var(--foreground))/0.6] hover:text-neon hover:border-[hsl(var(--neon))/0.5] transition backdrop-blur-sm"
+                    className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-md border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.9] px-2 py-1 text-xs text-[hsl(var(--foreground))/0.6] hover:text-neon hover:border-[hsl(var(--neon))/0.5] transition shadow-sm"
                   >
                     <Copy className="h-3.5 w-3.5" /> Copy
                   </button>
