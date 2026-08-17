@@ -864,6 +864,16 @@ const Index = () => {
                     <span key={i}>{p.value}</span>
                   ),
                 )}
+                {text && (
+                  <button
+                    type="button"
+                    onClick={copyPreviewText}
+                    title="Copy highlighted preview text"
+                    className="absolute top-0 right-0 inline-flex items-center gap-1 rounded-md border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.8] px-2 py-1 text-xs text-[hsl(var(--foreground))/0.6] hover:text-neon hover:border-[hsl(var(--neon))/0.5] transition backdrop-blur-sm"
+                  >
+                    <Copy className="h-3.5 w-3.5" /> Copy
+                  </button>
+                )}
                 {!previewExpanded && (
                   <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[hsl(var(--panel))] to-transparent pointer-events-none sm:hidden" />
                 )}
