@@ -807,12 +807,14 @@ const Index = () => {
               className="w-full flex-1 min-h-[140px] sm:min-h-[200px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3] custom-scroll overflow-y-auto p-3 sm:p-4"
             />
             <div className="flex flex-wrap justify-end gap-2 border-t border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.4] px-3 sm:px-4 py-2">
-              <button
-                onClick={() => copy(text)}
-                className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--neon))/0.08] transition"
-              >
-                <Copy className="h-4 w-4" /> Copy
-              </button>
+              {!rewriteDone && (
+                <button
+                  onClick={() => copy(text)}
+                  className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--neon))/0.08] transition"
+                >
+                  <Copy className="h-4 w-4" /> Copy
+                </button>
+              )}
               <button
                 onClick={clearText}
                 className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--danger))/0.15] transition"
