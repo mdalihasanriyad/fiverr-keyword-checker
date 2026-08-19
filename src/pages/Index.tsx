@@ -1181,16 +1181,21 @@ const Index = () => {
 
        <CtaStatsPanel />
 
-       <footer className="mt-8 border-t border-[hsl(var(--panel-border))/0.5] pt-5 pb-2">
-          <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-1 px-4 text-center sm:flex-row sm:gap-2">
-            <span className="text-xs sm:text-sm text-[hsl(var(--foreground))/0.55] leading-relaxed">
-              Developed by
-            </span>
-            <span className="text-xs sm:text-sm font-semibold text-neon leading-relaxed break-words">
-              Sales CMS Claystone
-            </span>
-          </div>
-        </footer>
+        <footer className="mt-8 border-t border-[hsl(var(--panel-border))/0.5] pt-5 pb-2">
+           <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-1 px-4 text-center sm:flex-row sm:gap-2">
+             <span className="text-xs sm:text-sm text-[hsl(var(--foreground))/0.55] leading-relaxed">
+               Developed by
+             </span>
+             <a
+               href="https://ahriyad.top"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="text-xs sm:text-sm font-semibold text-neon leading-relaxed break-words hover:underline"
+             >
+               ahriyad
+             </a>
+           </div>
+         </footer>
       </div>
 
       <KeywordEditor
