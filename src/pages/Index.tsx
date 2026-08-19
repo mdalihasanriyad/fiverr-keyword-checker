@@ -620,6 +620,7 @@ const Index = () => {
       localStorage.removeItem(TEXTAREA_STATE_KEY);
     } catch {}
     setText("");
+    setRewriteDone(false);
     const el = textareaRef.current;
     if (el) {
       el.style.height = "";
