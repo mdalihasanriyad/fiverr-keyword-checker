@@ -254,6 +254,7 @@ const Index = () => {
     return "after-second";
   });
   const [recentlyAdded, setRecentlyAdded] = useState<string[]>([]);
+  const [rewriteDone, setRewriteDone] = useState(false);
   const [keywords, setKeywords] = useState<KeywordMap>(() => {
     if (typeof window === "undefined") return DEFAULT_KEYWORDS;
     try {
