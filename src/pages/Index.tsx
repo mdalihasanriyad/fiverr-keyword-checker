@@ -605,6 +605,7 @@ const Index = () => {
     }
     const count = detected.length;
     setText("");
+    setRewriteDone(false);
     scrollToTopWithOffset(scrollTopOffset);
     toast.success("Text cleared", {
       description: count > 0
