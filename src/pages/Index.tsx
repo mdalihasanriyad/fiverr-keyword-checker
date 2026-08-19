@@ -843,12 +843,14 @@ const Index = () => {
                   >
                     <Pencil className="h-3.5 w-3.5" /> Edit
                   </button>
-                  <button
-                    onClick={copyPreviewText}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-2.5 py-1 text-xs text-neon hover:bg-[hsl(var(--neon))/0.15]"
-                  >
-                    <Copy className="h-3.5 w-3.5" /> Copy preview
-                  </button>
+                  {rewriteDone && (
+                    <button
+                      onClick={() => copy(text, "Rewritten message copied")}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-2.5 py-1 text-xs text-neon hover:bg-[hsl(var(--neon))/0.15]"
+                    >
+                      <Copy className="h-3.5 w-3.5" /> Copy preview
+                    </button>
+                  )}
                 </div>
               </div>
               <div
