@@ -591,11 +591,6 @@ const Index = () => {
     }
   };
 
-  const copyPreviewText = async () => {
-    const val = previewRef.current?.innerText ?? text;
-    await copy(val, "Preview copied to clipboard");
-  };
-
   const clearText = () => {
     if (!text) {
       toast.info("Nothing to clear", {
