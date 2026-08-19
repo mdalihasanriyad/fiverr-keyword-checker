@@ -872,20 +872,22 @@ const Index = () => {
                     <span key={i}>{p.value}</span>
                   ),
                 )}
-                {text && (
-                  <button
-                    type="button"
-                    onClick={copyPreviewText}
-                    title="Copy highlighted preview text"
-                    className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-md border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.9] px-2 py-1 text-xs text-[hsl(var(--foreground))/0.6] hover:text-neon hover:border-[hsl(var(--neon))/0.5] transition shadow-sm"
-                  >
-                    <Copy className="h-3.5 w-3.5" /> Copy
-                  </button>
-                )}
                 {!previewExpanded && (
                   <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[hsl(var(--panel))] to-transparent pointer-events-none sm:hidden" />
                 )}
               </div>
+              {rewriteDone && (
+                <div className="mt-3 flex justify-end border-t border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.4] pt-3">
+                  <button
+                    type="button"
+                    onClick={() => copy(text, "Rewritten message copied")}
+                    title="Copy rewritten message"
+                    className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-3 py-1.5 text-xs text-neon hover:bg-[hsl(var(--neon))/0.15] transition"
+                  >
+                    <Copy className="h-4 w-4" /> Copy
+                  </button>
+                </div>
+              )}
               {text.length > 120 && (
                 <button
                   onClick={() => setPreviewExpanded((v) => !v)}
