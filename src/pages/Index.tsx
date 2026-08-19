@@ -707,9 +707,6 @@ const Index = () => {
             <Link to="/gig-seo" className="rounded-full border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.6] px-3 py-1 text-xs sm:text-sm text-[hsl(var(--foreground))/0.75] hover:border-[hsl(var(--neon))/0.5] hover:text-neon transition">
               Gig SEO
             </Link>
-            <a href="#translator" className="rounded-full border border-[hsl(var(--neon))/0.5] bg-[hsl(var(--neon))/0.08] px-3 py-1 text-xs sm:text-sm text-neon hover:bg-[hsl(var(--neon))/0.15] transition">
-              Bangla Translator
-            </a>
           </nav>
         </div>
 
@@ -789,8 +786,8 @@ const Index = () => {
           </p>
         )}
 
-        {/* Main grid: input | results | translation */}
-        <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Main grid: input | preview */}
+        <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
           {/* Input */}
           <div className="panel glow-neon relative flex flex-col overflow-hidden">
             <textarea
@@ -826,7 +823,7 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Middle: Preview with highlights */}
+          {/* Preview with highlights */}
           <div ref={resultsRef} className="flex flex-col scroll-mt-6">
             <div className="panel p-4 flex flex-col flex-1">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
@@ -893,11 +890,6 @@ const Index = () => {
                 </button>
               )}
             </div>
-          </div>
-
-          {/* Right: Translation */}
-          <div id="translator" className="flex flex-col scroll-mt-6">
-            <InlineTranslator source={text} />
           </div>
         </div>
 
