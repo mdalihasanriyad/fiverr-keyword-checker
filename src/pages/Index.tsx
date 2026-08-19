@@ -564,6 +564,7 @@ const Index = () => {
     const count = detected.length;
     const uniqueCount = uniqueDetected.length;
     setText(out);
+    setRewriteDone(true);
     toast.success(`Rewrote ${count} keyword${count > 1 ? "s" : ""}`, {
       description: `${uniqueCount} unique keyword${uniqueCount > 1 ? "s" : ""} replaced across your text.`,
     });
