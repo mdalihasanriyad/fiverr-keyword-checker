@@ -254,6 +254,7 @@ const Index = () => {
     return "after-second";
   });
   const [recentlyAdded, setRecentlyAdded] = useState<string[]>([]);
+  const [rewriteDone, setRewriteDone] = useState(false);
   const [keywords, setKeywords] = useState<KeywordMap>(() => {
     if (typeof window === "undefined") return DEFAULT_KEYWORDS;
     try {
@@ -563,6 +564,7 @@ const Index = () => {
     const count = detected.length;
     const uniqueCount = uniqueDetected.length;
     setText(out);
+    setRewriteDone(true);
     toast.success(`Rewrote ${count} keyword${count > 1 ? "s" : ""}`, {
       description: `${uniqueCount} unique keyword${uniqueCount > 1 ? "s" : ""} replaced across your text.`,
     });
@@ -589,11 +591,6 @@ const Index = () => {
     }
   };
 
-  const copyPreviewText = async () => {
-    const val = previewRef.current?.innerText ?? text;
-    await copy(val, "Preview copied to clipboard");
-  };
-
   const clearText = () => {
     if (!text) {
       toast.info("Nothing to clear", {
@@ -603,6 +600,7 @@ const Index = () => {
     }
     const count = detected.length;
     setText("");
+    setRewriteDone(false);
     scrollToTopWithOffset(scrollTopOffset);
     toast.success("Text cleared", {
       description: count > 0
@@ -617,6 +615,7 @@ const Index = () => {
       localStorage.removeItem(TEXTAREA_STATE_KEY);
     } catch {}
     setText("");
+    setRewriteDone(false);
     const el = textareaRef.current;
     if (el) {
       el.style.height = "";
@@ -803,12 +802,14 @@ const Index = () => {
               className="w-full flex-1 min-h-[140px] sm:min-h-[200px] resize-none bg-transparent outline-none text-base leading-relaxed placeholder:text-[hsl(var(--foreground))/0.3] custom-scroll overflow-y-auto p-3 sm:p-4"
             />
             <div className="flex flex-wrap justify-end gap-2 border-t border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.4] px-3 sm:px-4 py-2">
-              <button
-                onClick={() => copy(text)}
-                className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--neon))/0.08] transition"
-              >
-                <Copy className="h-4 w-4" /> Copy
-              </button>
+              {!rewriteDone && (
+                <button
+                  onClick={() => copy(text)}
+                  className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--neon))/0.08] transition"
+                >
+                  <Copy className="h-4 w-4" /> Copy
+                </button>
+              )}
               <button
                 onClick={clearText}
                 className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.6] px-3 py-1.5 text-sm hover:bg-[hsl(var(--danger))/0.15] transition"
@@ -837,12 +838,14 @@ const Index = () => {
                   >
                     <Pencil className="h-3.5 w-3.5" /> Edit
                   </button>
-                  <button
-                    onClick={copyPreviewText}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-2.5 py-1 text-xs text-neon hover:bg-[hsl(var(--neon))/0.15]"
-                  >
-                    <Copy className="h-3.5 w-3.5" /> Copy preview
-                  </button>
+                  {rewriteDone && (
+                    <button
+                      onClick={() => copy(text, "Rewritten message copied")}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-2.5 py-1 text-xs text-neon hover:bg-[hsl(var(--neon))/0.15]"
+                    >
+                      <Copy className="h-3.5 w-3.5" /> Copy preview
+                    </button>
+                  )}
                 </div>
               </div>
               <div
@@ -864,20 +867,22 @@ const Index = () => {
                     <span key={i}>{p.value}</span>
                   ),
                 )}
-                {text && (
-                  <button
-                    type="button"
-                    onClick={copyPreviewText}
-                    title="Copy highlighted preview text"
-                    className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-md border border-[hsl(var(--panel-border))/0.6] bg-[hsl(var(--background))/0.9] px-2 py-1 text-xs text-[hsl(var(--foreground))/0.6] hover:text-neon hover:border-[hsl(var(--neon))/0.5] transition shadow-sm"
-                  >
-                    <Copy className="h-3.5 w-3.5" /> Copy
-                  </button>
-                )}
                 {!previewExpanded && (
                   <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[hsl(var(--panel))] to-transparent pointer-events-none sm:hidden" />
                 )}
               </div>
+              {rewriteDone && (
+                <div className="mt-3 flex justify-end border-t border-[hsl(var(--panel-border))] bg-[hsl(var(--background))/0.4] pt-3">
+                  <button
+                    type="button"
+                    onClick={() => copy(text, "Rewritten message copied")}
+                    title="Copy rewritten message"
+                    className="inline-flex items-center gap-2 rounded-md border border-[hsl(var(--neon))/0.4] bg-[hsl(var(--neon))/0.08] px-3 py-1.5 text-xs text-neon hover:bg-[hsl(var(--neon))/0.15] transition"
+                  >
+                    <Copy className="h-4 w-4" /> Copy
+                  </button>
+                </div>
+              )}
               {text.length > 120 && (
                 <button
                   onClick={() => setPreviewExpanded((v) => !v)}
@@ -1171,16 +1176,21 @@ const Index = () => {
 
        <CtaStatsPanel />
 
-       <footer className="mt-8 border-t border-[hsl(var(--panel-border))/0.5] pt-5 pb-2">
-          <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-1 px-4 text-center sm:flex-row sm:gap-2">
-            <span className="text-xs sm:text-sm text-[hsl(var(--foreground))/0.55] leading-relaxed">
-              Developed by
-            </span>
-            <span className="text-xs sm:text-sm font-semibold text-neon leading-relaxed break-words">
-              Sales CMS Claystone
-            </span>
-          </div>
-        </footer>
+        <footer className="mt-8 border-t border-[hsl(var(--panel-border))/0.5] pt-5 pb-2">
+           <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-1 px-4 text-center sm:flex-row sm:gap-2">
+             <span className="text-xs sm:text-sm text-[hsl(var(--foreground))/0.55] leading-relaxed">
+               Developed by
+             </span>
+             <a
+               href="https://ahriyad.top"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="text-xs sm:text-sm font-semibold text-neon leading-relaxed break-words hover:underline"
+             >
+               ahriyad
+             </a>
+           </div>
+         </footer>
       </div>
 
       <KeywordEditor
