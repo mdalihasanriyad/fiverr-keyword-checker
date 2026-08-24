@@ -786,9 +786,9 @@ const Index = () => {
         )}
 
         {/* Main grid: input | preview */}
-        <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
+        <div data-testid="main-grid" className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
           {/* Input */}
-          <div className="panel glow-neon relative flex flex-col overflow-hidden">
+          <div data-testid="input-panel" className="panel glow-neon relative flex flex-col overflow-hidden">
             <textarea
               ref={textareaRef}
               value={text}
