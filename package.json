@@ -16,7 +16,9 @@
     "pretest:e2e:debug": "node scripts/ensure-playwright-chromium.mjs",
     "test:e2e:debug": "playwright test --debug",
     "pretest:e2e:ui": "node scripts/ensure-playwright-chromium.mjs",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "pretest:e2e:rerun-failed": "node scripts/ensure-playwright-chromium.mjs",
+    "test:e2e:rerun-failed": "playwright test --last-failed"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
