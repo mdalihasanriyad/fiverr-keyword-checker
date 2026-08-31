@@ -14,7 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conversations: {
+        Row: {
+          contact_color: string
+          contact_name: string
+          contact_role: string
+          created_at: string
+          id: string
+          last_message_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_color?: string
+          contact_name: string
+          contact_role?: string
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_color?: string
+          contact_name?: string
+          contact_role?: string
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          flagged_words: string[]
+          id: string
+          sender: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          flagged_words?: string[]
+          id?: string
+          sender: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          flagged_words?: string[]
+          id?: string
+          sender?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
