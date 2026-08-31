@@ -36,6 +36,11 @@ try {
   console.log(`Opening trace: ${latest}`);
   execSync(`npx playwright show-trace ${JSON.stringify(latest)}`, { stdio: "inherit" });
 } catch (err) {
-  console.error(err.message || err);
+  if (err.code === "ENOENT" && err.path === resultsDir) {
+    console.error("No test-results/ directory yet. Run a failing E2E test first to generate a trace.");
+  } else {
+    console.error(err.message || err);
+  }
   process.exit(1);
 }
+
