@@ -48,6 +48,8 @@ const Inbox = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [replying, setReplying] = useState(false);
+
   const [draft, setDraft] = useState("");
   const threadRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef(false);
