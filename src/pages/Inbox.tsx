@@ -346,7 +346,16 @@ const Inbox = () => {
                     </div>
                   </div>
                 ))}
+                {replying && (
+                  <div className="flex justify-start">
+                    <div className="inline-flex items-center gap-2 rounded-2xl border border-[hsl(var(--panel-border))/0.5] bg-[hsl(var(--panel))] px-4 py-2.5 text-xs text-[hsl(var(--foreground))/0.6]">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-neon" />
+                      {active?.contact_name ?? "Contact"} is typing…
+                    </div>
+                  </div>
+                )}
               </div>
+
             </div>
 
             {/* Composer: input + preview */}
