@@ -9,6 +9,8 @@ import ForbiddenWords from "./pages/ForbiddenWords.tsx";
 import Compliance from "./pages/Compliance.tsx";
 import GigSeo from "./pages/GigSeo.tsx";
 import Translator from "./pages/Translator.tsx";
+import Auth from "./pages/Auth.tsx";
+import Inbox from "./pages/Inbox.tsx";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/compliance" element={<Compliance />} />
           <Route path="/gig-seo" element={<GigSeo />} />
           <Route path="/translator" element={<Translator />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/inbox" element={<Inbox />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
