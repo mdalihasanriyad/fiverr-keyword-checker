@@ -7,9 +7,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthSession } from "@/hooks/useAuthSession";
 import { useSeo } from "@/lib/seo";
-import {
-  CONTACT_REPLIES, SEED_CONTACTS, findFlagged, segmentText,
-} from "@/lib/messaging";
+import { SEED_CONTACTS, findFlagged, segmentText } from "@/lib/messaging";
+
 
 type Conversation = {
   id: string;
