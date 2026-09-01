@@ -176,22 +176,41 @@ const Inbox = () => {
     );
     setSending(false);
 
-    // Simulated contact reply.
+    // Live AI reply from the contact.
     const convId = activeId;
-    setTimeout(async () => {
-      const reply = CONTACT_REPLIES[Math.floor(Math.random() * CONTACT_REPLIES.length)];
-      const { data: rep } = await supabase
-        .from("messages")
-        .insert({ conversation_id: convId, user_id: user.id, sender: "contact", body: reply })
-        .select()
-        .single();
-      if (rep) {
-        setMessages((m) => (m[0]?.conversation_id === convId || m.length === 0
-          ? [...m, rep as Message]
-          : m));
+    const history = [...messages, data as Message].map((m) => ({
+      sender: m.sender,
+      body: m.body,
+    }));
+    setReplying(true);
+    try {
+      const { data: ai, error: aiError } = await supabase.functions.invoke("contact-reply", {
+        body: {
+          contactName: active?.contact_name,
+          contactRole: active?.contact_role,
+          messages: history,
+        },
+      });
+      const reply = (ai as { reply?: string } | null)?.reply?.trim();
+      if (aiError || !reply) {
+        toast.error(aiError?.message ?? "Contact could not reply right now");
+      } else {
+        const { data: rep } = await supabase
+          .from("messages")
+          .insert({ conversation_id: convId, user_id: user.id, sender: "contact", body: reply })
+          .select()
+          .single();
+        if (rep) {
+          setMessages((m) =>
+            m[0]?.conversation_id === convId || m.length === 0 ? [...m, rep as Message] : m,
+          );
+        }
       }
-    }, 1600);
+    } finally {
+      setReplying(false);
+    }
   };
+
 
   const clearThread = async () => {
     if (!activeId) return;
