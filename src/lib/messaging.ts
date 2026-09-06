@@ -2,7 +2,7 @@
 // highlight segmentation, and simulated contact seeding data.
 
 export const FORBIDDEN_WORDS: string[] = [
-  "crypto", "payment", "payments", "instagram", "linkedin", "facebook",
+  "crypto", "payment", "payments", "payout", "payouts", "instagram", "linkedin", "facebook",
   "negative", "star", "five star", "transferwise", "account", "bank",
   "messenger", "skype", "card", "credit", "purchase", "whatsapp",
   "password", "inbox", "sms", "transaction", "stripe", "paypal",
