@@ -22,6 +22,7 @@ export type Database = {
           created_at: string
           id: string
           last_message_at: string
+          profile_slug: string | null
           user_id: string
         }
         Insert: {
@@ -31,6 +32,7 @@ export type Database = {
           created_at?: string
           id?: string
           last_message_at?: string
+          profile_slug?: string | null
           user_id: string
         }
         Update: {
@@ -40,6 +42,7 @@ export type Database = {
           created_at?: string
           id?: string
           last_message_at?: string
+          profile_slug?: string | null
           user_id?: string
         }
         Relationships: []
@@ -78,6 +81,139 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolio_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          profile_id: string
+          sort_order: number
+          tags: string[]
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          profile_id: string
+          sort_order?: number
+          tags?: string[]
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          profile_id?: string
+          sort_order?: number
+          tags?: string[]
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_color: string
+          bio: string
+          created_at: string
+          display_name: string
+          headline: string
+          id: string
+          level: string
+          location: string
+          rating: number
+          review_count: number
+          slug: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          avatar_color?: string
+          bio?: string
+          created_at?: string
+          display_name: string
+          headline?: string
+          id?: string
+          level?: string
+          location?: string
+          rating?: number
+          review_count?: number
+          slug: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          avatar_color?: string
+          bio?: string
+          created_at?: string
+          display_name?: string
+          headline?: string
+          id?: string
+          level?: string
+          location?: string
+          rating?: number
+          review_count?: number
+          slug?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          category: string
+          created_at: string
+          delivery_days: number
+          description: string
+          id: string
+          price_usd: number
+          profile_id: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          delivery_days?: number
+          description?: string
+          id?: string
+          price_usd?: number
+          profile_id: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          delivery_days?: number
+          description?: string
+          id?: string
+          price_usd?: number
+          profile_id?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
