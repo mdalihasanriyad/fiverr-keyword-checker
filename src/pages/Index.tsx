@@ -57,7 +57,7 @@ type FilterPreset = {
 // Default: empty string means "auto-hyphenate" (e.g. mail -> ma-il, pay -> pa-y).
 // You can still set a custom replacement per keyword if you want one.
 const DEFAULT_KEYWORDS: KeywordMap = {
-  crypto: "", payment: "", instagram: "", linkedin: "",
+  crypto: "", payment: "", payout: "", payouts: "", instagram: "", linkedin: "",
   facebook: "", negative: "", star: "", "five star": "",
   transferwise: "", account: "", bank: "", messenger: "",
   skype: "", card: "", credit: "", purchase: "",
